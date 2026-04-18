@@ -1,0 +1,21 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/game/game_manager.tscn" id="1_gm"]
+[ext_resource type="PackedScene" path="res://scenes/game/run_controller.tscn" id="2_rc"]
+[ext_resource type="PackedScene" path="res://scenes/game/sector_root.tscn" id="3_sr"]
+[ext_resource type="PackedScene" path="res://scenes/player/player_ship.tscn" id="4_ps"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="5_hud"]
+
+[node name="Main" type="Node"]
+
+[node name="GameManager" parent="." instance=ExtResource("1_gm")]
+
+[node name="RunController" parent="." instance=ExtResource("2_rc")]
+
+[node name="SectorRoot" parent="." instance=ExtResource("3_sr")]
+
+[node name="PlayerShip" parent="." instance=ExtResource("4_ps")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="HUD" parent="." instance=ExtResource("5_hud")]
