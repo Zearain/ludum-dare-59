@@ -1,6 +1,36 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://ctcdrid00ndaj"]
 
-[ext_resource type="Script" path="res://scripts/entities/PlayerShip.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://chdmoney13t5m" path="res://scripts/entities/PlayerShip.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://ejy40j0bgqo2" path="res://scripts/components/ShipMovementComponent.cs" id="2_move"]
+[ext_resource type="Script" uid="uid://cmklyxkmkbpv1" path="res://scripts/components/ShipHullComponent.cs" id="3_hull"]
+[ext_resource type="Script" uid="uid://dchks200sx85e" path="res://scripts/components/ScannerComponent.cs" id="4_scan"]
+[ext_resource type="Script" uid="uid://br8ngpfnyaef4" path="res://scripts/components/ShipInputComponent.cs" id="5_s1a8k"]
 
-[node name="PlayerShip" type="Node2D"]
+[node name="PlayerShip" type="CharacterBody2D" unique_id=655004833]
 script = ExtResource("1_script")
+
+[node name="Visual" type="Polygon2D" parent="." unique_id=407914046]
+unique_name_in_owner = true
+color = Color(0.3, 0.9, 1, 0.95)
+polygon = PackedVector2Array(0, -18, 12, 10, 0, 4, -12, 10)
+
+[node name="ShipMovementComponent" type="Node" parent="." unique_id=458138864 node_paths=PackedStringArray("OwnerBody")]
+unique_name_in_owner = true
+script = ExtResource("2_move")
+OwnerBody = NodePath("..")
+
+[node name="ShipHullComponent" type="Node" parent="." unique_id=1355028585]
+unique_name_in_owner = true
+script = ExtResource("3_hull")
+
+[node name="ScannerComponent" type="Node" parent="." unique_id=999213481]
+unique_name_in_owner = true
+script = ExtResource("4_scan")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="." unique_id=70790962]
+unique_name_in_owner = true
+polygon = PackedVector2Array(0, -18, 12, 10, 0, 4, -12, 10)
+
+[node name="ShipInputComponent" type="Node" parent="." unique_id=621650088]
+unique_name_in_owner = true
+script = ExtResource("5_s1a8k")

@@ -1,6 +1,9 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/HudController.cs" id="1_hud"]
 
 [node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
@@ -9,3 +12,52 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 340.0
+offset_bottom = 280.0
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="TimerLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Time: 00:00"
+
+[node name="HullLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Hull: 100/100"
+
+[node name="HullBar" type="ProgressBar" parent="Root/Panel/VBox"]
+layout_mode = 2
+max_value = 100.0
+value = 100.0
+
+[node name="ScannerLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Scanner: Ready"
+
+[node name="ScannerBar" type="ProgressBar" parent="Root/Panel/VBox"]
+layout_mode = 2
+max_value = 1.0
+value = 1.0
+
+[node name="SignalLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Signal: --"
+
+[node name="SignalBar" type="ProgressBar" parent="Root/Panel/VBox"]
+layout_mode = 2
+max_value = 1.0
+
+[node name="ObjectiveLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Objective: --"
+
+[node name="StateLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+autowrap_mode = 2

@@ -9,4 +9,6 @@ public sealed class HazardSpawnData
     public Vector2 Position { get; set; }
 
     public float Radius { get; set; }
+
+    public float DamagePerSecond { get; set; }
 }

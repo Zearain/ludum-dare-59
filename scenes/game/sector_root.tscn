@@ -1,3 +1,7 @@
 [gd_scene format=3]
 
 [node name="SectorRoot" type="Node2D"]
+
+[node name="ObjectiveContainer" type="Node2D" parent="."]
+
+[node name="HazardContainer" type="Node2D" parent="."]

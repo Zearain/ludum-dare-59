@@ -1,5 +1,7 @@
 namespace LudumDare59.Data;
 
+using System.Collections.Generic;
+
 using Godot;
 
 public sealed class SectorDefinition
@@ -15,4 +17,8 @@ public sealed class SectorDefinition
     public Vector2 ObjectivePoint { get; set; }
 
     public float HazardDensity { get; set; }
+
+    public bool IsFinalSector { get; set; }
+
+    public List<HazardSpawnData> HazardSpawns { get; } = new();
 }
