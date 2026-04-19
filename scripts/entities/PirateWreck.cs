@@ -19,6 +19,10 @@ public partial class PirateWreck : Node2D, IActivatableObjective, ISignalSource
 
     public bool IsCompleted { get; private set; }
 
+    public float ActivationProgressNormalized => _activationComponent?.ActivationProgressNormalized ?? 0.0f;
+
+    public bool IsPlayerInActivationRange => _activationComponent?.IsPlayerInActivationRange ?? false;
+
     private RelayActivationComponent _activationComponent = null!;
 
     public override void _Ready()

@@ -10,10 +10,13 @@ using LudumDare59.Systems;
 public partial class RelayActivationComponent : Node
 {
     [Export]
-    public float HoldDurationSeconds { get; set; } = 2.0f;
+    public float HoldDurationSeconds { get; set; } = 2.4f;
 
     [Export]
-    public float ActivationRadius { get; set; } = 72.0f;
+    public float ActivationRadius { get; set; } = 88.0f;
+
+    [Export]
+    public float ProgressDecayPerSecond { get; set; } = 0.65f;
 
     [Export]
     public bool RequiresInteractInput { get; set; } = true;
@@ -29,6 +32,8 @@ public partial class RelayActivationComponent : Node
     private float _currentProgress;
     private bool _isComplete;
 
+    public bool IsPlayerInActivationRange { get; private set; }
+
     public override void _Process(double delta)
     {
         if (_isComplete || _playerShip is null || _objectiveNode is null)
@@ -38,6 +43,7 @@ public partial class RelayActivationComponent : Node
 
         float distance = _objectiveNode.GlobalPosition.DistanceTo(_playerShip.GlobalPosition);
         bool inRange = distance <= ActivationRadius;
+        IsPlayerInActivationRange = inRange;
         bool inputReady = !RequiresInteractInput || Input.IsActionPressed(GameManager.InteractAction);
 
         if (inRange && inputReady)
@@ -46,7 +52,7 @@ public partial class RelayActivationComponent : Node
         }
         else
         {
-            _currentProgress = 0.0f;
+            _currentProgress = Mathf.Max(0.0f, _currentProgress - ((float)delta * ProgressDecayPerSecond));
         }
 
         if (_currentProgress < HoldDurationSeconds)
@@ -70,5 +76,6 @@ public partial class RelayActivationComponent : Node
     {
         _currentProgress = 0.0f;
         _isComplete = false;
+        IsPlayerInActivationRange = false;
     }
 }

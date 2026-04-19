@@ -4,6 +4,8 @@ public sealed class RunResult
 {
     public bool Completed { get; set; }
 
+    public string ResultTitle { get; set; } = string.Empty;
+
     public double FinalTimeSeconds { get; set; }
 
     public float DamageTaken { get; set; }

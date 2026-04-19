@@ -18,6 +18,14 @@ public sealed class SectorDefinition
 
     public float HazardDensity { get; set; }
 
+    public float SignalRange { get; set; }
+
+    public float NoiseStrength { get; set; }
+
+    public float EchoStrength { get; set; }
+
+    public int DistortionSeed { get; set; }
+
     public bool IsFinalSector { get; set; }
 
     public List<HazardSpawnData> HazardSpawns { get; } = new();

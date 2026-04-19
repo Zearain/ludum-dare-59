@@ -1,6 +1,10 @@
-[gd_scene format=3]
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/ScoreScreenController.cs" id="1_score"]
 
 [node name="ScoreScreen" type="CanvasLayer"]
+visible = false
+script = ExtResource("1_score")
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
@@ -9,3 +13,53 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Shade" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.72)
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+layout_mode = 1
+offset_left = 300.0
+offset_top = 120.0
+offset_right = 980.0
+offset_bottom = 600.0
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Run Result"
+
+[node name="TimeLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Time: 00:00"
+
+[node name="DamageLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Damage Taken: 0"
+
+[node name="HullLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Hull Remaining: 0"
+
+[node name="SectorsLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Sectors Cleared: 0"
+
+[node name="ScoreLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Score: 0"
+
+[node name="PromptLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Press R to restart"

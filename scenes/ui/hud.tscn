@@ -18,7 +18,7 @@ layout_mode = 1
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 340.0
-offset_bottom = 280.0
+offset_bottom = 320.0
 
 [node name="VBox" type="VBoxContainer" parent="Root/Panel"]
 layout_mode = 2
@@ -46,18 +46,93 @@ layout_mode = 2
 max_value = 1.0
 value = 1.0
 
-[node name="SignalLabel" type="Label" parent="Root/Panel/VBox"]
-layout_mode = 2
-text = "Signal: --"
-
-[node name="SignalBar" type="ProgressBar" parent="Root/Panel/VBox"]
-layout_mode = 2
-max_value = 1.0
-
 [node name="ObjectiveLabel" type="Label" parent="Root/Panel/VBox"]
 layout_mode = 2
 text = "Objective: --"
 
+[node name="ActivationLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Activation: --"
+
+[node name="ActivationBar" type="ProgressBar" parent="Root/Panel/VBox"]
+layout_mode = 2
+max_value = 1.0
+visible = false
+
+[node name="SectorLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+text = "Sector: --"
+
+[node name="TransmissionLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+autowrap_mode = 2
+text = "Transmission: --"
+
 [node name="StateLabel" type="Label" parent="Root/Panel/VBox"]
 layout_mode = 2
 autowrap_mode = 2
+
+[node name="ScannerOverlay" type="Control" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+visible = false
+
+[node name="ScannerRing" type="Control" parent="Root/ScannerOverlay"]
+custom_minimum_size = Vector2(96, 96)
+layout_mode = 0
+offset_right = 96.0
+offset_bottom = 96.0
+visible = false
+
+[node name="ScannerRingOutlineTop" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 4.0
+offset_right = 74.0
+offset_bottom = 6.0
+color = Color(0.25, 0.55, 0.7, 0.55)
+
+[node name="ScannerRingOutlineBottom" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 90.0
+offset_right = 74.0
+offset_bottom = 92.0
+color = Color(0.25, 0.55, 0.7, 0.55)
+
+[node name="ScannerRingOutlineLeft" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 22.0
+offset_right = 6.0
+offset_bottom = 74.0
+color = Color(0.25, 0.55, 0.7, 0.55)
+
+[node name="ScannerRingOutlineRight" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 22.0
+offset_right = 92.0
+offset_bottom = 74.0
+color = Color(0.25, 0.55, 0.7, 0.55)
+
+[node name="ScannerRingBlip" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+custom_minimum_size = Vector2(10, 10)
+layout_mode = 0
+offset_right = 10.0
+offset_bottom = 10.0
+color = Color(0.35, 0.95, 1, 0.95)
+visible = false
+
+[node name="ScannerOuterBlip" type="ColorRect" parent="Root/ScannerOverlay"]
+custom_minimum_size = Vector2(14, 14)
+layout_mode = 0
+offset_right = 14.0
+offset_bottom = 14.0
+color = Color(0.35, 0.95, 1, 0.9)
+visible = false

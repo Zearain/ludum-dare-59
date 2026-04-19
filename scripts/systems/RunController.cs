@@ -1,5 +1,7 @@
 namespace LudumDare59.Systems;
 
+using System.Collections.Generic;
+
 using Godot;
 
 using LudumDare59.Components;
@@ -11,19 +13,35 @@ using LudumDare59.UI;
 
 public partial class RunController : Node
 {
-    private const int RelaySectorCount = 1;
+    private const int RelaySectorCount = 5;
 
     private readonly RunTimer _runTimer = new();
     private readonly SectorGenerator _sectorGenerator = new();
     private readonly SignalSystem _signalSystem = new();
+    private readonly ScoreSystem _scoreSystem = new();
+    private readonly string[] _relayTransmissionFragments =
+    [
+        "Relay one restored. Night Saint altered course toward the deeper belt.",
+        "Relay two restored. The pirate signal is skipping between debris shadows.",
+        "Relay three restored. Distortion spikes ahead. Stay sharp.",
+        "Relay four restored. The dreadnought pushed through a lightning seam.",
+        "Relay five restored. Final source locked. The wreck is close now.",
+    ];
+    private const string FinalTransmission = "Black box recovered. Night Saint went silent at the heart of the storm.";
 
     private RunSeed? _runSeed;
     private RunState _runState = RunState.Intro;
     private int _currentSectorIndex;
+    private int _sectorsCleared;
+    private string _currentTransmission = string.Empty;
+    private RunResult? _lastRunResult;
 
     private PackedScene _relayBuoyScene = null!;
     private PackedScene _pirateWreckScene = null!;
     private PackedScene _staticCloudScene = null!;
+    private PackedScene _movingStormCellScene = null!;
+    private PackedScene _debrisFieldScene = null!;
+    private PackedScene _lightningArcScene = null!;
 
     private Node2D _sectorRoot = null!;
     private Node2D _objectiveContainer = null!;
@@ -31,9 +49,12 @@ public partial class RunController : Node
     private PlayerShip _playerShip = null!;
     private Camera2D _camera = null!;
     private HudController _hud = null!;
+    private ScoreScreenController _scoreScreen = null!;
 
     private SectorDefinition? _activeSector;
     private IActivatableObjective? _activeObjective;
+    private SignalReading? _activeScanPing;
+    private float _scanPingTimeRemaining;
 
     private bool _isInitialized;
 
@@ -42,6 +63,9 @@ public partial class RunController : Node
         _relayBuoyScene = GD.Load<PackedScene>("res://scenes/objectives/relay_buoy.tscn");
         _pirateWreckScene = GD.Load<PackedScene>("res://scenes/objectives/pirate_wreck.tscn");
         _staticCloudScene = GD.Load<PackedScene>("res://scenes/hazards/static_cloud.tscn");
+        _movingStormCellScene = GD.Load<PackedScene>("res://scenes/hazards/moving_storm_cell.tscn");
+        _debrisFieldScene = GD.Load<PackedScene>("res://scenes/hazards/debris_field.tscn");
+        _lightningArcScene = GD.Load<PackedScene>("res://scenes/hazards/lightning_arc.tscn");
     }
 
     public override void _ExitTree()
@@ -49,6 +73,7 @@ public partial class RunController : Node
         if (_playerShip is not null)
         {
             _playerShip.Died -= OnPlayerDied;
+            _playerShip.ScannerComponent.ScanTriggered -= OnScanTriggered;
         }
 
         DetachActiveObjective();
@@ -58,6 +83,7 @@ public partial class RunController : Node
         PlayerShip playerShip,
         Camera2D camera,
         HudController hud,
+        ScoreScreenController scoreScreen,
         Node2D sectorRoot,
         Node2D objectiveContainer,
         Node2D hazardContainer)
@@ -70,11 +96,13 @@ public partial class RunController : Node
         _playerShip = playerShip;
         _camera = camera;
         _hud = hud;
+        _scoreScreen = scoreScreen;
         _sectorRoot = sectorRoot;
         _objectiveContainer = objectiveContainer;
         _hazardContainer = hazardContainer;
 
         _playerShip.Died += OnPlayerDied;
+        _playerShip.ScannerComponent.ScanTriggered += OnScanTriggered;
         _isInitialized = true;
         StartRun();
     }
@@ -89,6 +117,11 @@ public partial class RunController : Node
         if (_runState == RunState.InSector)
         {
             _runTimer.Tick(delta);
+            _scanPingTimeRemaining = Mathf.Max(0.0f, _scanPingTimeRemaining - (float)delta);
+            if (_scanPingTimeRemaining <= 0.0f)
+            {
+                _activeScanPing = null;
+            }
         }
 
         if ((_runState == RunState.RunComplete || _runState == RunState.RunFailed)
@@ -117,8 +150,15 @@ public partial class RunController : Node
         ClearSectorContents();
         _runSeed = RunSeed.CreateRandom();
         _currentSectorIndex = 0;
+        _sectorsCleared = 0;
+        _currentTransmission = "Storm relay chain reacquired. Follow the signal and restore the drifting buoys.";
+        _lastRunResult = null;
+        _activeScanPing = null;
+        _scanPingTimeRemaining = 0.0f;
         _runTimer.Reset();
         _runState = RunState.InSector;
+        _scoreScreen.HideScreen();
+        _hud.Visible = true;
         _playerShip.ResetForRun(Vector2.Zero);
         LoadSector(_currentSectorIndex);
     }
@@ -139,6 +179,7 @@ public partial class RunController : Node
         SpawnObjective(_activeSector);
         SpawnHazards(_activeSector);
         _playerShip.PrepareForSector(_activeSector.SpawnPoint);
+        _camera.GlobalPosition = _activeSector.SpawnPoint;
     }
 
     private void SpawnObjective(SectorDefinition sector)
@@ -171,12 +212,21 @@ public partial class RunController : Node
     {
         foreach (HazardSpawnData hazardSpawn in sector.HazardSpawns)
         {
-            if (hazardSpawn.HazardType != "static_cloud")
+            PackedScene? scene = hazardSpawn.HazardType switch
+            {
+                "static_cloud" => _staticCloudScene,
+                "moving_storm_cell" => _movingStormCellScene,
+                "debris_field" => _debrisFieldScene,
+                "lightning_arc" => _lightningArcScene,
+                _ => null,
+            };
+
+            if (scene is null)
             {
                 continue;
             }
 
-            Node candidate = _staticCloudScene.Instantiate();
+            Node candidate = scene.Instantiate();
             if (candidate is not Node2D hazardNode)
             {
                 candidate.QueueFree();
@@ -189,6 +239,24 @@ public partial class RunController : Node
             HazardDamageComponent? damageComponent = hazardNode.GetNodeOrNull<HazardDamageComponent>("HazardDamageComponent");
             damageComponent?.Initialize(hazardNode, _playerShip);
             damageComponent?.Configure(hazardSpawn.Radius, hazardSpawn.DamagePerSecond);
+
+            if (hazardNode is LightningArc lightningArc)
+            {
+                lightningArc.Configure(
+                    hazardSpawn.Radius,
+                    hazardSpawn.DamagePerSecond,
+                    hazardSpawn.ActiveDurationSeconds,
+                    hazardSpawn.CooldownDurationSeconds);
+            }
+
+            if (hazardNode is MovingStormCell movingStormCell)
+            {
+                movingStormCell.Configure(
+                    hazardSpawn.Radius,
+                    hazardSpawn.DamagePerSecond,
+                    hazardSpawn.DriftOffset,
+                    hazardSpawn.DriftSpeed);
+            }
 
             Node2D? visual = hazardNode.GetNodeOrNull<Node2D>("Visual");
             if (visual is not null)
@@ -208,8 +276,16 @@ public partial class RunController : Node
 
         if (_activeSector?.IsFinalSector == true)
         {
-            _runState = RunState.RunComplete;
+            _sectorsCleared = RelaySectorCount + 1;
+            _currentTransmission = FinalTransmission;
+            CompleteRun(true);
             return;
+        }
+
+        _sectorsCleared = Mathf.Max(_sectorsCleared, _currentSectorIndex + 1);
+        if (_currentSectorIndex < _relayTransmissionFragments.Length)
+        {
+            _currentTransmission = _relayTransmissionFragments[_currentSectorIndex];
         }
 
         _currentSectorIndex += 1;
@@ -223,7 +299,8 @@ public partial class RunController : Node
             return;
         }
 
-        _runState = RunState.RunFailed;
+        _sectorsCleared = Mathf.Max(_sectorsCleared, _currentSectorIndex);
+        CompleteRun(false);
     }
 
     private void ClearSectorContents()
@@ -262,27 +339,72 @@ public partial class RunController : Node
 
         if (_activeObjective is not null)
         {
-            SignalReading signalReading = _signalSystem.BuildReading(
-                _playerShip.GlobalPosition,
-                _activeObjective.ObjectivePosition,
-                scanner.ActiveClarityMultiplier);
-
-            _hud.SetSignal(signalReading);
             _hud.SetObjective(_activeObjective.ObjectiveLabel);
+            _hud.SetActivation(
+                _activeObjective.ActivationProgressNormalized,
+                _activeObjective.IsPlayerInActivationRange,
+                true);
         }
         else
         {
-            _hud.ClearSignal();
             _hud.SetObjective("No objective");
+            _hud.ClearActivation();
         }
+
+        if (_activeScanPing is not null && _scanPingTimeRemaining > 0.0f)
+        {
+            _hud.ShowScannerPing(_activeScanPing);
+        }
+        else
+        {
+            _hud.ClearScannerPing();
+        }
+
+        if (_activeSector is not null)
+        {
+            _hud.SetSector(_activeSector.SectorIndex + 1, _activeSector.IsFinalSector);
+        }
+
+        _hud.SetTransmission(_currentTransmission);
 
         _hud.SetRunState(_runState switch
         {
             RunState.InSector => string.Empty,
-            RunState.RunComplete => "Run complete - press R to restart",
-            RunState.RunFailed => "Run failed - press R to restart",
+            RunState.RunComplete => "Transmission recovered.",
+            RunState.RunFailed => "Storm contact lost.",
             _ => string.Empty,
         });
+    }
+
+    private void CompleteRun(bool completed)
+    {
+        _runState = completed ? RunState.RunComplete : RunState.RunFailed;
+        _lastRunResult = _scoreSystem.BuildResult(
+            completed,
+            _runTimer.ElapsedSeconds,
+            _playerShip.TotalDamageTaken,
+            _playerShip.HullCurrent,
+            _sectorsCleared);
+        _hud.Visible = false;
+        _scoreScreen.ShowResult(_lastRunResult);
+    }
+
+    private void OnScanTriggered()
+    {
+        if (_runState != RunState.InSector || _activeObjective is null)
+        {
+            return;
+        }
+
+        _activeScanPing = _signalSystem.BuildScanPing(
+            _playerShip.GlobalPosition,
+            _activeObjective.ObjectivePosition,
+            _activeSector?.SignalRange ?? 3200.0f,
+            _activeSector?.NoiseStrength ?? 0.0f,
+            _activeSector?.EchoStrength ?? 0.0f,
+            _activeSector?.DistortionSeed ?? 0,
+            (float)_runTimer.ElapsedSeconds);
+        _scanPingTimeRemaining = _playerShip.ScannerComponent.PingDurationSeconds;
     }
 
     private void ConstrainPlayerToArena()

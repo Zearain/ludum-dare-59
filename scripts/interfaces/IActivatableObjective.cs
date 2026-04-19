@@ -16,5 +16,9 @@ public interface IActivatableObjective
 
     bool IsCompleted { get; }
 
+    float ActivationProgressNormalized { get; }
+
+    bool IsPlayerInActivationRange { get; }
+
     void AssignPlayer(PlayerShip playerShip);
 }

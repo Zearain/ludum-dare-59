@@ -1,3 +1,14 @@
-[gd_scene format=3]
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/entities/DebrisField.cs" id="1_debris"]
+[ext_resource type="Script" path="res://scripts/components/HazardDamageComponent.cs" id="2_damage"]
 
 [node name="DebrisField" type="Node2D"]
+script = ExtResource("1_debris")
+
+[node name="Visual" type="Polygon2D" parent="."]
+color = Color(0.75, 0.72, 0.82, 0.92)
+polygon = PackedVector2Array(-48, -28, -8, -42, 34, -30, 52, 6, 18, 44, -36, 34, -56, 0)
+
+[node name="HazardDamageComponent" type="Node" parent="."]
+script = ExtResource("2_damage")

@@ -11,10 +11,16 @@ public partial class HudController : CanvasLayer
     private ProgressBar _hullBar = null!;
     private Label _scannerLabel = null!;
     private ProgressBar _scannerBar = null!;
-    private Label _signalLabel = null!;
-    private ProgressBar _signalBar = null!;
     private Label _objectiveLabel = null!;
+    private Label _activationLabel = null!;
+    private ProgressBar _activationBar = null!;
+    private Label _sectorLabel = null!;
+    private Label _transmissionLabel = null!;
     private Label _stateLabel = null!;
+    private Control _scannerOverlay = null!;
+    private Control _scannerRing = null!;
+    private ColorRect _scannerRingBlip = null!;
+    private ColorRect _scannerOuterBlip = null!;
 
     public override void _Ready()
     {
@@ -23,10 +29,18 @@ public partial class HudController : CanvasLayer
         _hullBar = GetNode<ProgressBar>("Root/Panel/VBox/HullBar");
         _scannerLabel = GetNode<Label>("Root/Panel/VBox/ScannerLabel");
         _scannerBar = GetNode<ProgressBar>("Root/Panel/VBox/ScannerBar");
-        _signalLabel = GetNode<Label>("Root/Panel/VBox/SignalLabel");
-        _signalBar = GetNode<ProgressBar>("Root/Panel/VBox/SignalBar");
         _objectiveLabel = GetNode<Label>("Root/Panel/VBox/ObjectiveLabel");
+        _activationLabel = GetNode<Label>("Root/Panel/VBox/ActivationLabel");
+        _activationBar = GetNode<ProgressBar>("Root/Panel/VBox/ActivationBar");
+        _sectorLabel = GetNode<Label>("Root/Panel/VBox/SectorLabel");
+        _transmissionLabel = GetNode<Label>("Root/Panel/VBox/TransmissionLabel");
         _stateLabel = GetNode<Label>("Root/Panel/VBox/StateLabel");
+        _scannerOverlay = GetNode<Control>("Root/ScannerOverlay");
+        _scannerRing = GetNode<Control>("Root/ScannerOverlay/ScannerRing");
+        _scannerRingBlip = GetNode<ColorRect>("Root/ScannerOverlay/ScannerRing/ScannerRingBlip");
+        _scannerOuterBlip = GetNode<ColorRect>("Root/ScannerOverlay/ScannerOuterBlip");
+        ClearScannerPing();
+        ClearActivation();
     }
 
     public void SetTimer(double elapsedSeconds)
@@ -58,29 +72,74 @@ public partial class HudController : CanvasLayer
             : $"Scanner: {cooldownRemaining:0.0}s";
     }
 
-    public void SetSignal(SignalReading reading)
+    public void SetActivation(float activationProgress, bool isPlayerInRange, bool requiresInteract)
     {
-        float angleDegrees = Mathf.RadToDeg(reading.Direction.Angle());
-        if (angleDegrees < 0.0f)
-        {
-            angleDegrees += 360.0f;
-        }
-
-        _signalBar.MaxValue = 1.0f;
-        _signalBar.Value = reading.Strength;
-        _signalLabel.Text = $"Signal: {angleDegrees:000} deg | {reading.Strength:P0}";
+        _activationBar.MaxValue = 1.0f;
+        _activationBar.Value = activationProgress;
+        _activationBar.Visible = isPlayerInRange || activationProgress > 0.0f;
+        _activationLabel.Text = isPlayerInRange
+            ? (requiresInteract ? "Activation: Hold E" : "Activation: In Progress")
+            : activationProgress > 0.0f
+                ? "Activation: Stabilizing"
+                : "Activation: Get Close";
     }
 
-    public void ClearSignal()
+    public void ClearActivation()
     {
-        _signalBar.MaxValue = 1.0f;
-        _signalBar.Value = 0.0f;
-        _signalLabel.Text = "Signal: --";
+        _activationBar.MaxValue = 1.0f;
+        _activationBar.Value = 0.0f;
+        _activationBar.Visible = false;
+        _activationLabel.Text = "Activation: --";
+    }
+
+    public void ShowScannerPing(SignalReading reading)
+    {
+        Vector2 viewportCenter = GetViewport().GetVisibleRect().Size * 0.5f;
+        float ringRadius = 44.0f;
+        float outerRadius = 112.0f;
+        Vector2 direction = reading.Direction.Normalized();
+
+        _scannerOverlay.Visible = true;
+        _scannerRing.Visible = true;
+        _scannerRing.Position = viewportCenter - (_scannerRing.Size * 0.5f);
+
+        Vector2 ringCenter = _scannerRing.Size * 0.5f;
+        Vector2 ringOffset = direction * ringRadius;
+        _scannerRingBlip.Visible = true;
+        _scannerRingBlip.Position = ringCenter + ringOffset - (_scannerRingBlip.Size * 0.5f);
+
+        float outerSpread = Mathf.Lerp(18.0f, 6.0f, reading.Confidence);
+        Vector2 outerDirection = direction.Rotated(Mathf.DegToRad(outerSpread * Mathf.Sin(Time.GetTicksMsec() * 0.01f)));
+        _scannerOuterBlip.Visible = true;
+        _scannerOuterBlip.Position = viewportCenter + (outerDirection * outerRadius) - (_scannerOuterBlip.Size * 0.5f);
+        _scannerOuterBlip.Modulate = new Color(0.35f, 0.95f, 1.0f, Mathf.Lerp(0.55f, 0.95f, reading.Confidence));
+    }
+
+    public void ClearScannerPing()
+    {
+        _scannerOverlay.Visible = false;
+        _scannerRing.Visible = false;
+        _scannerRingBlip.Visible = false;
+        _scannerOuterBlip.Visible = false;
     }
 
     public void SetObjective(string objectiveText)
     {
         _objectiveLabel.Text = $"Objective: {objectiveText}";
+    }
+
+    public void SetSector(int sectorNumber, bool isFinalSector)
+    {
+        _sectorLabel.Text = isFinalSector
+            ? $"Sector: Final ({sectorNumber})"
+            : $"Sector: Relay {sectorNumber}/5";
+    }
+
+    public void SetTransmission(string transmissionText)
+    {
+        _transmissionLabel.Text = string.IsNullOrWhiteSpace(transmissionText)
+            ? "Transmission: --"
+            : $"Transmission: {transmissionText}";
     }
 
     public void SetRunState(string stateText)

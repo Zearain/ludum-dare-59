@@ -11,4 +11,12 @@ public sealed class HazardSpawnData
     public float Radius { get; set; }
 
     public float DamagePerSecond { get; set; }
+
+    public float ActiveDurationSeconds { get; set; }
+
+    public float CooldownDurationSeconds { get; set; }
+
+    public Vector2 DriftOffset { get; set; }
+
+    public float DriftSpeed { get; set; }
 }

@@ -10,24 +10,20 @@ public partial class ScannerComponent : Node
     public float ScanCooldownSeconds { get; set; } = 3.0f;
 
     [Export]
-    public float ClarityBoostSeconds { get; set; } = 1.5f;
+    public float PingDurationSeconds { get; set; } = 1.2f;
 
     [Export]
-    public float ScanClarityMultiplier { get; set; } = 1.7f;
+    public float ScanClarityMultiplier { get; set; } = 2.8f;
 
     public float CooldownRemaining => _cooldownRemaining;
-
-    public float ActiveClarityMultiplier => _clarityTimeRemaining > 0.0f ? ScanClarityMultiplier : 1.0f;
 
     public event Action? ScanTriggered;
 
     private float _cooldownRemaining;
-    private float _clarityTimeRemaining;
 
     public override void _Process(double delta)
     {
         _cooldownRemaining = Mathf.Max(0.0f, _cooldownRemaining - (float)delta);
-        _clarityTimeRemaining = Mathf.Max(0.0f, _clarityTimeRemaining - (float)delta);
 
         if (Input.IsActionJustPressed(Systems.GameManager.ScanPulseAction))
         {
@@ -43,7 +39,6 @@ public partial class ScannerComponent : Node
         }
 
         _cooldownRemaining = ScanCooldownSeconds;
-        _clarityTimeRemaining = ClarityBoostSeconds;
         ScanTriggered?.Invoke();
         return true;
     }
@@ -51,6 +46,5 @@ public partial class ScannerComponent : Node
     public void ResetScanner()
     {
         _cooldownRemaining = 0.0f;
-        _clarityTimeRemaining = 0.0f;
     }
 }

@@ -7,7 +7,7 @@ using LudumDare59.Entities;
 public partial class ShipMovementComponent : Node
 {
     [Export]
-    public float MaxSpeed { get; set; } = 420.0f;
+    public float MaxSpeed { get; set; } = 350.0f;
 
     [Export]
     public float Acceleration { get; set; } = 1800.0f;

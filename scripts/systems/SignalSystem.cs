@@ -6,25 +6,59 @@ using LudumDare59.Data;
 
 public sealed class SignalSystem
 {
-    private const float MaxSignalDistance = 1800.0f;
-
-    public SignalReading BuildReading(Vector2 playerPosition, Vector2 objectivePosition, float scannerMultiplier)
+    public SignalReading BuildScanPing(
+        Vector2 playerPosition,
+        Vector2 objectivePosition,
+        float signalRange,
+        float noiseStrength,
+        float echoStrength,
+        int distortionSeed,
+        float elapsedSeconds)
     {
         Vector2 toObjective = objectivePosition - playerPosition;
         float distance = toObjective.Length();
-        Vector2 direction = distance > 0.001f ? toObjective / distance : Vector2.Right;
+        Vector2 trueDirection = distance > 0.001f ? toObjective / distance : Vector2.Right;
+        float distancePressure = Mathf.Clamp(distance / Mathf.Max(1.0f, signalRange), 0.0f, 1.2f);
+        float noiseAmount = Mathf.Clamp((noiseStrength * 0.45f) + (distancePressure * 0.5f), 0.04f, 0.8f);
+        float echoAmount = Mathf.Clamp((echoStrength * 0.42f) + (distancePressure * 0.35f), 0.02f, 0.72f);
 
-        float normalizedDistance = Mathf.Clamp(distance / MaxSignalDistance, 0.0f, 1.0f);
-        float baseStrength = Mathf.Lerp(1.0f, 0.12f, normalizedDistance);
-        float strength = Mathf.Clamp(baseStrength * Mathf.Max(1.0f, scannerMultiplier), 0.05f, 1.0f);
-        float confidence = Mathf.Clamp(0.25f + (strength * 0.65f), 0.1f, 1.0f);
+        Vector2 displayedDirection = ApplyEcho(trueDirection, distortionSeed, elapsedSeconds, echoAmount);
+        displayedDirection = ApplyNoise(displayedDirection, distortionSeed, elapsedSeconds, noiseAmount);
+
+        float confidence = Mathf.Clamp(0.82f - (distancePressure * 0.42f) - (noiseAmount * 0.22f) - (echoAmount * 0.18f), 0.18f, 0.92f);
 
         return new SignalReading
         {
-            Direction = direction,
-            Strength = strength,
+            Direction = displayedDirection,
             Confidence = confidence,
-            JitterAmount = Mathf.Lerp(0.18f, 0.02f, confidence),
+            JitterAmount = Mathf.Clamp(Mathf.Lerp(0.48f, 0.08f, confidence) + (noiseAmount * 0.12f), 0.05f, 0.6f),
         };
+    }
+
+    private static Vector2 ApplyEcho(Vector2 trueDirection, int distortionSeed, float elapsedSeconds, float echoAmount)
+    {
+        if (echoAmount <= 0.001f)
+        {
+            return trueDirection;
+        }
+
+        float phase = (distortionSeed % 97) * 0.17f;
+        float sway = Mathf.Sin((elapsedSeconds * 0.95f) + phase);
+        float echoAngle = ((Mathf.Pi * 0.82f) + (0.55f * sway)) * echoAmount;
+        Vector2 falseDirection = trueDirection.Rotated(echoAngle);
+        float blend = Mathf.Clamp(0.28f + (0.52f * Mathf.Max(0.0f, sway)), 0.0f, 0.95f) * echoAmount;
+        return trueDirection.Slerp(falseDirection, blend).Normalized();
+    }
+
+    private static Vector2 ApplyNoise(Vector2 baseDirection, int distortionSeed, float elapsedSeconds, float noiseAmount)
+    {
+        if (noiseAmount <= 0.001f)
+        {
+            return baseDirection;
+        }
+
+        float jitterPhase = (distortionSeed % 59) * 0.31f;
+        float jitterAngle = Mathf.Sin((elapsedSeconds * 6.5f) + jitterPhase) * 1.05f * noiseAmount;
+        return baseDirection.Rotated(jitterAngle).Normalized();
     }
 }

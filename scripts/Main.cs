@@ -17,7 +17,8 @@ public partial class Main : Node
         PlayerShip playerShip = GetNode<PlayerShip>("PlayerShip");
         Camera2D camera = GetNode<Camera2D>("Camera2D");
         HudController hud = GetNode<HudController>("HUD");
+        ScoreScreenController scoreScreen = GetNode<ScoreScreenController>("ScoreScreen");
 
-        runController.Initialize(playerShip, camera, hud, sectorRoot, objectiveContainer, hazardContainer);
+        runController.Initialize(playerShip, camera, hud, scoreScreen, sectorRoot, objectiveContainer, hazardContainer);
     }
 }

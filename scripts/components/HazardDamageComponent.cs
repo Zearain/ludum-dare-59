@@ -13,6 +13,8 @@ public partial class HazardDamageComponent : Node, IDamageSource
     [Export]
     public float DamageRadius { get; set; } = 84.0f;
 
+    public bool IsDamageEnabled { get; set; } = true;
+
     public Vector2 DamageOrigin => _hazardNode?.GlobalPosition ?? Vector2.Zero;
 
     private Node2D? _hazardNode;
@@ -26,6 +28,11 @@ public partial class HazardDamageComponent : Node, IDamageSource
         }
 
         if (_playerShip is null || _playerShip.IsDead)
+        {
+            return;
+        }
+
+        if (!IsDamageEnabled)
         {
             return;
         }
