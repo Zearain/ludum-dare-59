@@ -1,12 +1,20 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://dliupj5hdq676"]
 
-[ext_resource type="Script" path="res://scripts/components/HazardDamageComponent.cs" id="1_damage"]
+[ext_resource type="Script" uid="uid://bcqhi2skseiel" path="res://scripts/components/HazardDamageComponent.cs" id="1_damage"]
 
-[node name="StaticCloud" type="Node2D"]
+[node name="StaticCloud" type="StaticBody2D" unique_id=2028466455]
 
-[node name="Visual" type="Polygon2D" parent="."]
+[node name="Visual" type="Polygon2D" parent="." unique_id=806350480]
 color = Color(0.8, 0.2, 0.95, 0.45)
 polygon = PackedVector2Array(0, -84, 58, -58, 84, 0, 58, 58, 0, 84, -58, 58, -84, 0, -58, -58)
 
-[node name="HazardDamageComponent" type="Node" parent="."]
+[node name="DamageArea" type="Area2D" parent="." unique_id=1956200940]
+
+[node name="DamageCollision" type="CollisionPolygon2D" parent="DamageArea" unique_id=889328145]
+polygon = PackedVector2Array(0, -84, 58, -58, 84, 0, 58, 58, 0, 84, -58, 58, -84, 0, -58, -58)
+
+[node name="HazardDamageComponent" type="Node" parent="." unique_id=414630534 node_paths=PackedStringArray("DamageArea", "DamageCollision", "Visual")]
 script = ExtResource("1_damage")
+DamageArea = NodePath("../DamageArea")
+DamageCollision = NodePath("../DamageArea/DamageCollision")
+Visual = NodePath("../Visual")

@@ -14,8 +14,6 @@ public sealed class SectorDefinition
 
     public Vector2 SpawnPoint { get; set; }
 
-    public Vector2 ObjectivePoint { get; set; }
-
     public float HazardDensity { get; set; }
 
     public float SignalRange { get; set; }
@@ -27,6 +25,8 @@ public sealed class SectorDefinition
     public int DistortionSeed { get; set; }
 
     public bool IsFinalSector { get; set; }
+
+    public List<ObjectiveStageData> ObjectiveStages { get; } = new();
 
     public List<HazardSpawnData> HazardSpawns { get; } = new();
 }

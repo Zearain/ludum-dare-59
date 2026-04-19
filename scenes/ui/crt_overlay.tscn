@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://pxswbl81qxeo"]
+
+[ext_resource type="Shader" uid="uid://bdfwpw3ib67wp" path="res://shaders/synthwave_crt_filter.gdshader" id="1_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1xg5l"]
+shader = ExtResource("1_shader")
+shader_parameter/line_color = Color(0.95, 0.2, 0.85, 1)
+shader_parameter/line_density = 120.0
+shader_parameter/line_strength = 0.13
+shader_parameter/scan_speed = 0.45
+shader_parameter/chroma_offset_px = 1.25
+shader_parameter/chroma_wobble = 0.4
+shader_parameter/chroma_speed = 1.1
+shader_parameter/vignette_strength = 0.1499999966472
+shader_parameter/vignette_inner = 0.35
+shader_parameter/vignette_outer = 0.75
+shader_parameter/noise_strength = 0.03
+shader_parameter/noise_speed = 6.0
+
+[node name="CRTOverlay" type="CanvasLayer" unique_id=2011517774]
+layer = 2
+
+[node name="FullscreenPass" type="ColorRect" parent="." unique_id=481474640]
+material = SubResource("ShaderMaterial_1xg5l")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

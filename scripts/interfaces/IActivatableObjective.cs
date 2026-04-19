@@ -4,6 +4,7 @@ using System;
 
 using Godot;
 
+using LudumDare59.Data;
 using LudumDare59.Entities;
 
 public interface IActivatableObjective
@@ -21,4 +22,6 @@ public interface IActivatableObjective
     bool IsPlayerInActivationRange { get; }
 
     void AssignPlayer(PlayerShip playerShip);
+
+    void Configure(ObjectiveStageData stageData);
 }

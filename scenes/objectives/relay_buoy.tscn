@@ -10,5 +10,9 @@ script = ExtResource("1_script")
 color = Color(0.2, 1, 0.8, 0.95)
 polygon = PackedVector2Array(-10, -16, 10, -16, 16, 0, 10, 16, -10, 16, -16, 0)
 
+[node name="VisualAccent" type="Polygon2D" parent="."]
+color = Color(0.5, 1, 0.95, 0.35)
+polygon = PackedVector2Array(0, -26, 22, 0, 0, 26, -22, 0)
+
 [node name="RelayActivationComponent" type="Node" parent="."]
 script = ExtResource("2_activation")

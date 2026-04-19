@@ -12,6 +12,7 @@ public partial class HudController : CanvasLayer
     private Label _scannerLabel = null!;
     private ProgressBar _scannerBar = null!;
     private Label _objectiveLabel = null!;
+    private Label _stageProgressLabel = null!;
     private Label _activationLabel = null!;
     private ProgressBar _activationBar = null!;
     private Label _sectorLabel = null!;
@@ -30,6 +31,7 @@ public partial class HudController : CanvasLayer
         _scannerLabel = GetNode<Label>("Root/Panel/VBox/ScannerLabel");
         _scannerBar = GetNode<ProgressBar>("Root/Panel/VBox/ScannerBar");
         _objectiveLabel = GetNode<Label>("Root/Panel/VBox/ObjectiveLabel");
+        _stageProgressLabel = GetNode<Label>("Root/Panel/VBox/StageProgressLabel");
         _activationLabel = GetNode<Label>("Root/Panel/VBox/ActivationLabel");
         _activationBar = GetNode<ProgressBar>("Root/Panel/VBox/ActivationBar");
         _sectorLabel = GetNode<Label>("Root/Panel/VBox/SectorLabel");
@@ -40,6 +42,7 @@ public partial class HudController : CanvasLayer
         _scannerRingBlip = GetNode<ColorRect>("Root/ScannerOverlay/ScannerRing/ScannerRingBlip");
         _scannerOuterBlip = GetNode<ColorRect>("Root/ScannerOverlay/ScannerOuterBlip");
         ClearScannerPing();
+        ClearStageProgress();
         ClearActivation();
     }
 
@@ -128,6 +131,25 @@ public partial class HudController : CanvasLayer
         _objectiveLabel.Text = $"Objective: {objectiveText}";
     }
 
+    public void SetStageProgress(int stageNumber, int stageTotal, ObjectiveStageKind? stageKind)
+    {
+        int clampedStage = Mathf.Clamp(stageNumber, 1, Mathf.Max(1, stageTotal));
+        string kindText = stageKind switch
+        {
+            ObjectiveStageKind.SubRelay => "Sub-Relay",
+            ObjectiveStageKind.WarpRelay => "Warp Relay",
+            ObjectiveStageKind.WreckPart => "Wreck Part",
+            ObjectiveStageKind.BlackBoxExtraction => "Extraction",
+            _ => "Objective",
+        };
+        _stageProgressLabel.Text = $"Stage: {clampedStage}/{Mathf.Max(1, stageTotal)} ({kindText})";
+    }
+
+    public void ClearStageProgress()
+    {
+        _stageProgressLabel.Text = "Stage: --";
+    }
+
     public void SetSector(int sectorNumber, bool isFinalSector)
     {
         _sectorLabel.Text = isFinalSector
@@ -146,4 +168,5 @@ public partial class HudController : CanvasLayer
     {
         _stateLabel.Text = stateText;
     }
+
 }

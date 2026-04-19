@@ -23,6 +23,8 @@ public override void _Process(double delta) { }          // per-frame logic
 public override void _PhysicsProcess(double delta) { }  // physics-rate logic
 ```
 
+Rule: Never change `position`, `rotation`, or `scale` in `_Process()` for nodes involved in physics, collision, or area detection. Perform those changes in `_PhysicsProcess()`.
+
 ## Node Reference Strategy
 
 Two clear rules:

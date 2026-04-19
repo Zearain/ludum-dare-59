@@ -72,6 +72,12 @@ public partial class RelayActivationComponent : Node
         ResetActivation();
     }
 
+    public void ConfigureActivation(float holdDurationSeconds)
+    {
+        HoldDurationSeconds = Mathf.Max(0.1f, holdDurationSeconds);
+        ResetActivation();
+    }
+
     public void ResetActivation()
     {
         _currentProgress = 0.0f;

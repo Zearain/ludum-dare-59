@@ -6,6 +6,40 @@ using LudumDare59.Data;
 
 public sealed class SignalSystem
 {
+    public SignalReading BuildReading(
+        Vector2 playerPosition,
+        Vector2 objectivePosition,
+        float signalRange,
+        float noiseStrength,
+        float echoStrength,
+        int distortionSeed,
+        float elapsedSeconds,
+        float clarityMultiplier)
+    {
+        Vector2 toObjective = objectivePosition - playerPosition;
+        float distance = toObjective.Length();
+        Vector2 trueDirection = distance > 0.001f ? toObjective / distance : Vector2.Right;
+        float distancePressure = Mathf.Clamp(distance / Mathf.Max(1.0f, signalRange), 0.0f, 1.2f);
+        float clarityScale = clarityMultiplier <= 1.0f ? 1.0f : 1.0f / clarityMultiplier;
+        float noiseAmount = Mathf.Clamp(((noiseStrength * 0.45f) + (distancePressure * 0.5f)) * clarityScale, 0.02f, 0.8f);
+        float echoAmount = Mathf.Clamp(((echoStrength * 0.42f) + (distancePressure * 0.35f)) * clarityScale, 0.0f, 0.72f);
+
+        Vector2 displayedDirection = ApplyEcho(trueDirection, distortionSeed, elapsedSeconds, echoAmount);
+        displayedDirection = ApplyNoise(displayedDirection, distortionSeed, elapsedSeconds, noiseAmount);
+
+        float confidence = Mathf.Clamp(0.82f - (distancePressure * 0.42f) - (noiseAmount * 0.22f) - (echoAmount * 0.18f), 0.18f, 0.96f);
+        float strength = Mathf.Clamp(1.0f - distancePressure, 0.0f, 1.0f);
+        strength = Mathf.Clamp(strength - (noiseAmount * 0.14f) - (echoAmount * 0.1f), 0.0f, 1.0f);
+
+        return new SignalReading
+        {
+            Direction = displayedDirection,
+            Strength = strength,
+            Confidence = confidence,
+            JitterAmount = Mathf.Clamp(Mathf.Lerp(0.48f, 0.08f, confidence) + (noiseAmount * 0.12f), 0.05f, 0.6f),
+        };
+    }
+
     public SignalReading BuildScanPing(
         Vector2 playerPosition,
         Vector2 objectivePosition,
@@ -13,26 +47,18 @@ public sealed class SignalSystem
         float noiseStrength,
         float echoStrength,
         int distortionSeed,
-        float elapsedSeconds)
+        float elapsedSeconds,
+        float clarityMultiplier)
     {
-        Vector2 toObjective = objectivePosition - playerPosition;
-        float distance = toObjective.Length();
-        Vector2 trueDirection = distance > 0.001f ? toObjective / distance : Vector2.Right;
-        float distancePressure = Mathf.Clamp(distance / Mathf.Max(1.0f, signalRange), 0.0f, 1.2f);
-        float noiseAmount = Mathf.Clamp((noiseStrength * 0.45f) + (distancePressure * 0.5f), 0.04f, 0.8f);
-        float echoAmount = Mathf.Clamp((echoStrength * 0.42f) + (distancePressure * 0.35f), 0.02f, 0.72f);
-
-        Vector2 displayedDirection = ApplyEcho(trueDirection, distortionSeed, elapsedSeconds, echoAmount);
-        displayedDirection = ApplyNoise(displayedDirection, distortionSeed, elapsedSeconds, noiseAmount);
-
-        float confidence = Mathf.Clamp(0.82f - (distancePressure * 0.42f) - (noiseAmount * 0.22f) - (echoAmount * 0.18f), 0.18f, 0.92f);
-
-        return new SignalReading
-        {
-            Direction = displayedDirection,
-            Confidence = confidence,
-            JitterAmount = Mathf.Clamp(Mathf.Lerp(0.48f, 0.08f, confidence) + (noiseAmount * 0.12f), 0.05f, 0.6f),
-        };
+        return BuildReading(
+            playerPosition,
+            objectivePosition,
+            signalRange,
+            noiseStrength,
+            echoStrength,
+            distortionSeed,
+            elapsedSeconds,
+            clarityMultiplier);
     }
 
     private static Vector2 ApplyEcho(Vector2 trueDirection, int distortionSeed, float elapsedSeconds, float echoAmount)

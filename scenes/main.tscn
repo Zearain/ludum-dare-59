@@ -1,12 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://cqkqh836dlm5t"]
+[gd_scene format=3 uid="uid://cqkqh836dlm5t"]
 
 [ext_resource type="PackedScene" path="res://scenes/game/game_manager.tscn" id="1_gm"]
 [ext_resource type="PackedScene" path="res://scenes/game/run_controller.tscn" id="2_rc"]
+[ext_resource type="PackedScene" path="res://scenes/game/music_controller.tscn" id="2_mc"]
 [ext_resource type="PackedScene" path="res://scenes/game/sector_root.tscn" id="3_sr"]
 [ext_resource type="PackedScene" uid="uid://ctcdrid00ndaj" path="res://scenes/player/player_ship.tscn" id="4_ps"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="5_hud"]
-[ext_resource type="Script" path="res://scripts/Main.cs" id="6_main"]
+[ext_resource type="Script" uid="uid://u8wv5fry3pvm" path="res://scripts/Main.cs" id="6_main"]
 [ext_resource type="PackedScene" path="res://scenes/ui/score_screen.tscn" id="7_score"]
+[ext_resource type="PackedScene" path="res://scenes/ui/crt_overlay.tscn" id="8_crt"]
 
 [node name="Main" type="Node" unique_id=128156468]
 script = ExtResource("6_main")
@@ -15,6 +17,8 @@ script = ExtResource("6_main")
 
 [node name="RunController" parent="." unique_id=684415671 instance=ExtResource("2_rc")]
 
+[node name="MusicController" parent="." instance=ExtResource("2_mc")]
+
 [node name="SectorRoot" parent="." unique_id=343812084 instance=ExtResource("3_sr")]
 
 [node name="PlayerShip" parent="." unique_id=1240125746 instance=ExtResource("4_ps")]
@@ -22,5 +26,9 @@ script = ExtResource("6_main")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1533745774]
 
 [node name="HUD" parent="." unique_id=1907033624 instance=ExtResource("5_hud")]
+layer = 1
 
-[node name="ScoreScreen" parent="." instance=ExtResource("7_score")]
+[node name="CRTOverlay" parent="." instance=ExtResource("8_crt")]
+
+[node name="ScoreScreen" parent="." unique_id=1782823723 instance=ExtResource("7_score")]
+layer = 3

@@ -1,6 +1,7 @@
 namespace LudumDare59.Systems;
 
 using System;
+
 using Godot;
 
 public partial class GameManager : Node
@@ -24,7 +25,6 @@ public partial class GameManager : Node
         }
 
         Instance = this;
-        EnsureInputActions();
     }
 
     public override void _ExitTree()
@@ -32,31 +32,6 @@ public partial class GameManager : Node
         if (Instance == this)
         {
             Instance = null;
-        }
-    }
-
-    private static void EnsureInputActions()
-    {
-        EnsureAction(MoveUpAction, Key.W, Key.Up);
-        EnsureAction(MoveDownAction, Key.S, Key.Down);
-        EnsureAction(MoveLeftAction, Key.A, Key.Left);
-        EnsureAction(MoveRightAction, Key.D, Key.Right);
-        EnsureAction(ScanPulseAction, Key.Space);
-        EnsureAction(InteractAction, Key.E);
-        EnsureAction(RestartRunAction, Key.R);
-    }
-
-    private static void EnsureAction(string actionName, params Key[] keys)
-    {
-        if (InputMap.HasAction(actionName))
-        {
-            return;
-        }
-
-        InputMap.AddAction(actionName, 0.5f);
-        foreach (Key key in keys)
-        {
-            InputMap.ActionAddEvent(actionName, CreateKeyEvent(key));
         }
     }
 

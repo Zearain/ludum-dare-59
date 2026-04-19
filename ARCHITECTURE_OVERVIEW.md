@@ -248,7 +248,7 @@ Purpose:
 
 - Centralize all gameplay signal calculations
 - Convert world state into player-facing signal feedback
-- Apply distortion rules consistently for HUD, scanner, and audio
+- Apply distortion rules consistently for scanner feedback and audio
 
 Inputs:
 
@@ -465,7 +465,7 @@ HUD data sources:
 - timer from run state
 - hull from the player hull component
 - scanner cooldown from the scanner component
-- signal direction and strength from `SignalSystem`
+- temporary scanner ping feedback from `SignalSystem`
 - objective state text from `RunController`
 - sector-local stage progress from `RunController`
 
@@ -474,8 +474,7 @@ Recommended HUD elements:
 - timer
 - hull bar
 - scanner cooldown
-- signal arrow
-- signal strength meter
+- scan-pulse ping overlay
 - objective label
 - stage progress such as `Node 2/4` or `Wreck Part 1/3`
 
@@ -516,7 +515,7 @@ Recommended order of implementation:
 3. Configurable objective nodes and ordered stage data
 4. `RunController` sector-local progression and terminal objective unlocks
 5. `SectorGenerator` with one hazard type
-6. `SignalSystem` and HUD signal display
+6. `SignalSystem` and scan-pulse signal feedback
 7. Remaining hazards, pacing, and score screen polish
 
 ## Maintenance Notes

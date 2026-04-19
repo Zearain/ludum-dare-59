@@ -13,21 +13,68 @@ public partial class HazardDamageComponent : Node, IDamageSource
     [Export]
     public float DamageRadius { get; set; } = 84.0f;
 
+    [Export]
+    public Area2D DamageArea { get; set; } = null!;
+
+    [Export]
+    public CollisionPolygon2D DamageCollision { get; set; } = null!;
+
+    [Export]
+    public Polygon2D Visual { get; set; } = null!;
+
     public bool IsDamageEnabled { get; set; } = true;
 
-    public Vector2 DamageOrigin => _hazardNode?.GlobalPosition ?? Vector2.Zero;
+    public Vector2 DamageOrigin => DamageArea?.GlobalPosition ?? Vector2.Zero;
 
-    private Node2D? _hazardNode;
-    private PlayerShip? _playerShip;
+    private PlayerShip? _playerInside;
 
-    public override void _PhysicsProcess(double delta)
+    public override void _Ready()
     {
-        if (_hazardNode is null)
+        var missingReferences = false;
+        if (DamageArea is null)
+        {
+            GD.PrintErr("HazardDamageComponent is missing a reference to its DamageArea.");
+            missingReferences = true;
+        }
+
+        if (DamageCollision is null)
+        {
+            GD.PrintErr("HazardDamageComponent is missing a reference to its DamageCollision.");
+            missingReferences = true;
+        }
+
+        if (Visual is null)
+        {
+            GD.PrintErr("HazardDamageComponent is missing a reference to its Visual.");
+            missingReferences = true;
+        }
+
+        if (missingReferences)
+        {
+            QueueFree();
+            return;
+        }
+
+        Area2D damageArea = DamageArea!;
+        damageArea.BodyEntered += OnBodyEntered;
+        damageArea.BodyExited += OnBodyExited;
+        SyncCollisionToVisual();
+    }
+
+    public override void _ExitTree()
+    {
+        if (DamageArea is null)
         {
             return;
         }
 
-        if (_playerShip is null || _playerShip.IsDead)
+        DamageArea.BodyEntered -= OnBodyEntered;
+        DamageArea.BodyExited -= OnBodyExited;
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (_playerInside is null || _playerInside.IsDead)
         {
             return;
         }
@@ -37,24 +84,54 @@ public partial class HazardDamageComponent : Node, IDamageSource
             return;
         }
 
-        float distance = _hazardNode.GlobalPosition.DistanceTo(_playerShip.GlobalPosition);
-        if (distance > DamageRadius)
-        {
-            return;
-        }
-
-        _playerShip.ApplyDamage(DamagePerSecond * (float)delta);
+        _playerInside.ApplyDamage(DamagePerSecond * (float)delta);
     }
 
     public void Configure(float radius, float damagePerSecond)
     {
         DamageRadius = radius;
         DamagePerSecond = damagePerSecond;
+        UpdateVisualScaleFromRadius();
+        SyncCollisionToVisual();
     }
 
-    public void Initialize(Node2D hazardNode, PlayerShip playerShip)
+    public void SyncCollisionToVisual()
     {
-        _hazardNode = hazardNode;
-        _playerShip = playerShip;
+        if (Visual is null || DamageArea is null || DamageCollision is null)
+        {
+            return;
+        }
+
+        DamageCollision.Polygon = Visual.Polygon;
+        DamageArea.Position = Visual.Position;
+        DamageArea.Rotation = Visual.Rotation;
+        DamageArea.Scale = Visual.Scale;
+    }
+
+    private void UpdateVisualScaleFromRadius()
+    {
+        if (Visual is null)
+        {
+            return;
+        }
+
+        float scale = DamageRadius / 84.0f;
+        Visual.Scale = new Vector2(scale, scale);
+    }
+
+    private void OnBodyEntered(Node2D body)
+    {
+        if (body is PlayerShip playerShip)
+        {
+            _playerInside = playerShip;
+        }
+    }
+
+    private void OnBodyExited(Node2D body)
+    {
+        if (body is PlayerShip playerShip && playerShip == _playerInside)
+        {
+            _playerInside = null;
+        }
     }
 }

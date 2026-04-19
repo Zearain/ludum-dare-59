@@ -33,8 +33,8 @@ You are a skilled signal hunter threading a fragile neon ship through impossible
 ## Core Loop
 
 1. Enter a storm sector.
-2. Read distorted signal feedback and move toward the current objective.
-3. Dodge hazards while using scan pulses to regain clarity.
+2. Trigger scan pulses to sample distorted signal feedback and move toward the current objective.
+3. Dodge hazards while managing scan cooldown and committing to risky routes.
 4. Reach and activate each sub-relay in the sector.
 5. Unlock and activate the sector warp relay.
 6. Continue to the next sector and repeat the chain under heavier pressure.
@@ -68,7 +68,7 @@ Narrative delivery should stay light:
 
 ## Moment-to-Moment Gameplay
 
-The player flies freely in a top-down arena using simple arcade controls rather than full Newtonian physics. The ship is guided by a signal indicator that points toward the current active sub-relay, warp relay, wreck part, or black box target, but storm interference makes it unreliable.
+The player flies freely in a top-down arena using simple arcade controls rather than full Newtonian physics. Directional information arrives in short scan-pulse pings toward the current active sub-relay, warp relay, wreck part, or black box target, with storm interference making those pings unreliable.
 
 The player must:
 
@@ -85,7 +85,7 @@ This keeps the game focused on interpretation, movement, and risk management rat
 - Top-down ship movement
 - Hull or health meter
 - Run timer
-- Signal direction and strength indicator
+- Scan-pulse directional signal pings
 - Scan pulse with cooldown
 - Multi-stage relay sector objective chain
 - Multi-stage final recovery objective chain
@@ -150,15 +150,15 @@ These change how the signal behaves from sector to sector.
 
 ### 1. Noise
 
-The signal indicator jitters and becomes less precise.
+Scan-pulse readings jitter and become less precise.
 
 ### 2. Echo
 
-False readings briefly pull the player toward the wrong direction.
+False readings briefly pull scan pings toward the wrong direction.
 
 ### 3. Attenuation
 
-The signal weakens until the player uses a scan pulse.
+Scan feedback weakens until the player uses a scan pulse.
 
 For the 48-hour version, two distortion types are enough.
 
@@ -204,8 +204,7 @@ The UI should feel like a lightweight cockpit overlay.
 - Timer
 - Hull bar
 - Scanner cooldown
-- Signal direction indicator
-- Signal strength meter
+- Scan-pulse ping overlay (temporary)
 - Current objective text
 
 Recommended objective states:
@@ -254,7 +253,7 @@ Visual style:
 
 - Black space background
 - Cyan, magenta, and violet highlights
-- Radar lines, scan pulses, and signal bars
+- Radar lines, scan pulses, and transient ping blips
 - Storm effects with static and electric distortion
 
 Audio style:
@@ -315,8 +314,7 @@ Only attempt these if the MVP is already stable and fun.
 
 ### Phase 3: Signal Systems
 
-- Direction indicator
-- Strength meter
+- Scan-pulse directional ping feedback
 - Scan pulse and cooldown
 - Distortion effects
 

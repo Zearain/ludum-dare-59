@@ -216,7 +216,7 @@ Tasks:
 - Add `ScannerComponent` to the player ship.
 - Add scan pulse input.
 - Add cooldown tracking.
-- Make scan pulses temporarily improve clarity, reveal signal strength, or counter attenuation.
+- Make scan pulses temporarily improve clarity, provide directional ping feedback, or counter attenuation.
 
 Definition of done:
 
@@ -237,7 +237,7 @@ Tasks:
 - Display timer.
 - Display hull.
 - Display scan cooldown.
-- Display signal direction and strength.
+- Display temporary scan-pulse ping feedback.
 - Display current objective text.
 - Display sector-local objective progress.
 

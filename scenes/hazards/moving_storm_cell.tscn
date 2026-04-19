@@ -1,14 +1,22 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cnaavyk0ho3s0"]
 
-[ext_resource type="Script" path="res://scripts/entities/MovingStormCell.cs" id="1_cell"]
-[ext_resource type="Script" path="res://scripts/components/HazardDamageComponent.cs" id="2_damage"]
+[ext_resource type="Script" uid="uid://cntl6mfw5h6u3" path="res://scripts/entities/MovingStormCell.cs" id="1_cell"]
+[ext_resource type="Script" uid="uid://bcqhi2skseiel" path="res://scripts/components/HazardDamageComponent.cs" id="2_damage"]
 
-[node name="MovingStormCell" type="Node2D"]
+[node name="MovingStormCell" type="AnimatableBody2D" unique_id=1346472838]
 script = ExtResource("1_cell")
 
-[node name="Visual" type="Polygon2D" parent="."]
+[node name="Visual" type="Polygon2D" parent="." unique_id=1252613656]
 color = Color(0.95, 0.28, 0.95, 0.5)
 polygon = PackedVector2Array(0, -84, 58, -58, 84, 0, 58, 58, 0, 84, -58, 58, -84, 0, -58, -58)
 
-[node name="HazardDamageComponent" type="Node" parent="."]
+[node name="DamageArea" type="Area2D" parent="." unique_id=521712963]
+
+[node name="DamageCollision" type="CollisionPolygon2D" parent="DamageArea" unique_id=1780353191]
+polygon = PackedVector2Array(0, -84, 58, -58, 84, 0, 58, 58, 0, 84, -58, 58, -84, 0, -58, -58)
+
+[node name="HazardDamageComponent" type="Node" parent="." unique_id=1725537814 node_paths=PackedStringArray("DamageArea", "DamageCollision", "Visual")]
 script = ExtResource("2_damage")
+DamageArea = NodePath("../DamageArea")
+DamageCollision = NodePath("../DamageArea/DamageCollision")
+Visual = NodePath("../Visual")

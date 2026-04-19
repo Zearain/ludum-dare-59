@@ -4,7 +4,7 @@ using Godot;
 
 using LudumDare59.Components;
 
-public partial class LightningArc : Node2D
+public partial class LightningArc : StaticBody2D
 {
     private Polygon2D _visual = null!;
     private HazardDamageComponent _hazardDamageComponent = null!;
@@ -20,7 +20,7 @@ public partial class LightningArc : Node2D
         SetArcActive(true);
     }
 
-    public override void _Process(double delta)
+    public override void _PhysicsProcess(double delta)
     {
         _phaseTimeRemaining -= (float)delta;
         if (_phaseTimeRemaining > 0.0f)

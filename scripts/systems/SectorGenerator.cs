@@ -8,6 +8,8 @@ using LudumDare59.Data;
 
 public sealed class SectorGenerator
 {
+    private static readonly int[] RelaySubRelayCounts = [2, 2, 3, 3, 4];
+
     private const float SpawnSafetyRadius = 260.0f;
     private const float ObjectiveSafetyRadius = 320.0f;
 
@@ -24,20 +26,6 @@ public sealed class SectorGenerator
 
         float yPadding = 180.0f;
         Vector2 spawnPoint = new(bounds.Position.X + 280.0f, rng.RandfRange(bounds.Position.Y + yPadding, bounds.End.Y - yPadding));
-        Vector2 objectivePoint = new(bounds.End.X - 320.0f, rng.RandfRange(bounds.Position.Y + yPadding, bounds.End.Y - yPadding));
-        Vector2 middlePointA = new(
-            rng.RandfRange(-arenaWidth * 0.22f, -arenaWidth * 0.05f),
-            rng.RandfRange(bounds.Position.Y + 220.0f, bounds.End.Y - 220.0f));
-        Vector2 middlePointB = new(
-            rng.RandfRange(arenaWidth * 0.02f, arenaWidth * 0.22f),
-            rng.RandfRange(bounds.Position.Y + 220.0f, bounds.End.Y - 220.0f));
-
-        float signalRange = Mathf.Max(
-            arenaWidth * 0.7f,
-            spawnPoint.DistanceTo(middlePointA) + middlePointA.DistanceTo(middlePointB) + middlePointB.DistanceTo(objectivePoint));
-        float hazardDensity = Mathf.Clamp(0.42f + (difficulty * 0.08f) + (isFinalSector ? 0.08f : 0.0f), 0.45f, 0.92f);
-        float noiseStrength = Mathf.Clamp(0.16f + ((difficulty - 1.0f) * 0.13f) + (isFinalSector ? 0.18f : 0.0f), 0.12f, 0.95f);
-        float echoStrength = Mathf.Clamp(0.08f + ((difficulty - 2.0f) * 0.11f) + (isFinalSector ? 0.22f : 0.0f), 0.0f, 0.78f);
 
         SectorDefinition definition = new()
         {
@@ -45,39 +33,51 @@ public sealed class SectorGenerator
             Seed = seed,
             ArenaBounds = bounds,
             SpawnPoint = spawnPoint,
-            ObjectivePoint = objectivePoint,
-            HazardDensity = hazardDensity,
-            SignalRange = signalRange,
-            NoiseStrength = noiseStrength,
-            EchoStrength = echoStrength,
-            DistortionSeed = seed ^ (sectorIndex * 7349),
             IsFinalSector = isFinalSector,
         };
 
-        Vector2[] route = [spawnPoint, middlePointA, middlePointB, objectivePoint];
+        BuildObjectiveStages(definition, rng);
+
+        List<Vector2> route = [spawnPoint];
+        for (int i = 0; i < definition.ObjectiveStages.Count; i++)
+        {
+            route.Add(definition.ObjectiveStages[i].Position);
+        }
+
+        float pathLength = ComputePathLength(route);
+        definition.SignalRange = Mathf.Max(arenaWidth * 0.7f, pathLength + 260.0f);
+        definition.HazardDensity = Mathf.Clamp(0.42f + (difficulty * 0.08f) + (isFinalSector ? 0.08f : 0.0f), 0.45f, 0.92f);
+        definition.NoiseStrength = Mathf.Clamp(0.16f + ((difficulty - 1.0f) * 0.13f) + (isFinalSector ? 0.18f : 0.0f), 0.12f, 0.95f);
+        definition.EchoStrength = Mathf.Clamp(0.08f + ((difficulty - 2.0f) * 0.11f) + (isFinalSector ? 0.22f : 0.0f), 0.0f, 0.78f);
+        definition.DistortionSeed = seed ^ (sectorIndex * 7349);
+
         float corridorHalfWidth = Mathf.Lerp(180.0f, 120.0f, Mathf.Clamp((difficulty - 1.0f) / 5.0f, 0.0f, 1.0f));
-        int cloudCount = 6 + (sectorIndex * 2) + (isFinalSector ? 3 : 0);
-        int movingCloudCount = Mathf.Max(0, sectorIndex) + (isFinalSector ? 2 : 0);
-        int debrisCount = 6 + (sectorIndex * 2) + (isFinalSector ? 3 : 0);
-        int lightningCount = 1 + Mathf.Max(0, sectorIndex - 1) + (isFinalSector ? 3 : 0);
+        int stagePressure = Mathf.Max(0, definition.ObjectiveStages.Count - 2);
+        int cloudCount = 6 + (sectorIndex * 2) + stagePressure + (isFinalSector ? 2 : 0);
+        int movingCloudCount = Mathf.Max(0, sectorIndex) + Mathf.Max(0, stagePressure - 1) + (isFinalSector ? 1 : 0);
+        int debrisCount = 6 + (sectorIndex * 2) + stagePressure + (isFinalSector ? 3 : 0);
+        int lightningCount = 1 + Mathf.Max(0, sectorIndex - 1) + stagePressure + (isFinalSector ? 2 : 0);
+
+        Vector2 finalObjectivePoint = definition.ObjectiveStages.Count > 0
+            ? definition.ObjectiveStages[^1].Position
+            : spawnPoint;
 
         for (int i = 0; i < cloudCount; i++)
         {
             Vector2 cloudPosition = i % 3 == 0
                 ? SampleLanePressurePosition(rng, route, corridorHalfWidth * 0.82f, bounds)
-                : FindOffRoutePosition(rng, bounds, route, corridorHalfWidth * 0.6f, 120.0f, spawnPoint, objectivePoint);
+                : FindOffRoutePosition(rng, bounds, route, corridorHalfWidth * 0.6f, 120.0f, spawnPoint, finalObjectivePoint);
 
             if (cloudPosition == Vector2.Zero)
             {
                 continue;
             }
 
-            float radius = rng.RandfRange(120.0f, 200.0f);
             HazardSpawnData hazard = new()
             {
                 HazardType = "static_cloud",
                 Position = cloudPosition,
-                Radius = radius,
+                Radius = rng.RandfRange(120.0f, 200.0f),
                 DamagePerSecond = rng.RandfRange(9.0f, 15.0f) + (difficulty * 0.7f),
             };
 
@@ -92,7 +92,7 @@ public sealed class SectorGenerator
         for (int i = 0; i < movingCloudCount; i++)
         {
             Vector2 movingCellPosition = SampleLanePressurePosition(rng, route, corridorHalfWidth * 0.7f, bounds);
-            if (!IsSafeFromCriticalPoints(movingCellPosition, spawnPoint, objectivePoint, ObjectiveSafetyRadius + 60.0f))
+            if (!IsSafeFromCriticalPoints(movingCellPosition, spawnPoint, finalObjectivePoint, ObjectiveSafetyRadius + 60.0f))
             {
                 continue;
             }
@@ -118,7 +118,7 @@ public sealed class SectorGenerator
         for (int i = 0; i < debrisCount; i++)
         {
             Vector2 debrisPosition = SampleLanePressurePosition(rng, route, corridorHalfWidth, bounds);
-            if (!IsSafeFromCriticalPoints(debrisPosition, spawnPoint, objectivePoint, ObjectiveSafetyRadius))
+            if (!IsSafeFromCriticalPoints(debrisPosition, spawnPoint, finalObjectivePoint, ObjectiveSafetyRadius))
             {
                 continue;
             }
@@ -141,8 +141,8 @@ public sealed class SectorGenerator
 
         for (int i = 0; i < lightningCount; i++)
         {
-            Vector2 lightningPosition = SampleLightningPosition(rng, route, bounds, objectivePoint, corridorHalfWidth);
-            if (!IsSafeFromCriticalPoints(lightningPosition, spawnPoint, objectivePoint, ObjectiveSafetyRadius + 40.0f))
+            Vector2 lightningPosition = SampleLightningPosition(rng, route, bounds, finalObjectivePoint, corridorHalfWidth);
+            if (!IsSafeFromCriticalPoints(lightningPosition, spawnPoint, finalObjectivePoint, ObjectiveSafetyRadius + 40.0f))
             {
                 continue;
             }
@@ -166,6 +166,98 @@ public sealed class SectorGenerator
         }
 
         return definition;
+    }
+
+    private static void BuildObjectiveStages(SectorDefinition definition, RandomNumberGenerator rng)
+    {
+        int stageCount;
+        if (definition.IsFinalSector)
+        {
+            stageCount = 4;
+        }
+        else
+        {
+            int relayIndex = Mathf.Clamp(definition.SectorIndex, 0, RelaySubRelayCounts.Length - 1);
+            stageCount = RelaySubRelayCounts[relayIndex] + 1;
+        }
+
+        Vector2[] stagePositions = GenerateObjectiveChain(rng, definition.ArenaBounds, definition.SpawnPoint, stageCount);
+        for (int i = 0; i < stagePositions.Length; i++)
+        {
+            ObjectiveStageData stageData = new()
+            {
+                Position = stagePositions[i],
+            };
+
+            if (definition.IsFinalSector)
+            {
+                bool isExtraction = i == stagePositions.Length - 1;
+                stageData.StageKind = isExtraction ? ObjectiveStageKind.BlackBoxExtraction : ObjectiveStageKind.WreckPart;
+                stageData.ObjectiveLabel = isExtraction
+                    ? "Extract Black Box"
+                    : $"Recover Wreck Part {i + 1}/3";
+                stageData.ActivationDurationSeconds = isExtraction ? 2.8f : 2.3f;
+            }
+            else
+            {
+                int subRelayCount = stagePositions.Length - 1;
+                bool isWarpRelay = i == stagePositions.Length - 1;
+                stageData.StageKind = isWarpRelay ? ObjectiveStageKind.WarpRelay : ObjectiveStageKind.SubRelay;
+                stageData.ObjectiveLabel = isWarpRelay
+                    ? "Activate Warp Relay"
+                    : $"Activate Sub-Relay {i + 1}/{subRelayCount}";
+                stageData.ActivationDurationSeconds = isWarpRelay ? 2.7f : 2.2f;
+            }
+
+            definition.ObjectiveStages.Add(stageData);
+        }
+    }
+
+    private static Vector2[] GenerateObjectiveChain(RandomNumberGenerator rng, Rect2 bounds, Vector2 spawnPoint, int stageCount)
+    {
+        Vector2[] positions = new Vector2[stageCount];
+        float xStart = spawnPoint.X + 420.0f;
+        float xEnd = bounds.End.X - 320.0f;
+        float yPadding = 210.0f;
+
+        Vector2 previous = spawnPoint;
+        for (int i = 0; i < stageCount; i++)
+        {
+            float t = (i + 1.0f) / stageCount;
+            float x = Mathf.Lerp(xStart, xEnd, t) + rng.RandfRange(-120.0f, 120.0f);
+            float y = rng.RandfRange(bounds.Position.Y + yPadding, bounds.End.Y - yPadding);
+            Vector2 candidate = new(x, y);
+            candidate = ClampToBounds(candidate, bounds, 180.0f);
+
+            float minSegmentLength = i == stageCount - 1 ? 260.0f : 320.0f;
+            if (candidate.DistanceTo(previous) < minSegmentLength)
+            {
+                Vector2 direction = (candidate - previous).Normalized();
+                if (direction.LengthSquared() < 0.01f)
+                {
+                    direction = Vector2.Right;
+                }
+
+                candidate = previous + (direction * minSegmentLength);
+                candidate = ClampToBounds(candidate, bounds, 180.0f);
+            }
+
+            positions[i] = candidate;
+            previous = candidate;
+        }
+
+        return positions;
+    }
+
+    private static float ComputePathLength(IReadOnlyList<Vector2> route)
+    {
+        float length = 0.0f;
+        for (int i = 0; i < route.Count - 1; i++)
+        {
+            length += route[i].DistanceTo(route[i + 1]);
+        }
+
+        return length;
     }
 
     private static Vector2 FindOffRoutePosition(RandomNumberGenerator rng, Rect2 bounds, IReadOnlyList<Vector2> route, float corridorHalfWidth, float padding, Vector2 spawnPoint, Vector2 objectivePoint)
