@@ -35,24 +35,26 @@ You are a skilled signal hunter threading a fragile neon ship through impossible
 1. Enter a storm sector.
 2. Read distorted signal feedback and move toward the current objective.
 3. Dodge hazards while using scan pulses to regain clarity.
-4. Reach and activate the relay buoy.
-5. Receive the next transmission fragment and continue to the next sector.
-6. Reach the final source sector and recover the pirate black box.
-7. Receive a final score based on time and damage taken.
+4. Reach and activate each sub-relay in the sector.
+5. Unlock and activate the sector warp relay.
+6. Continue to the next sector and repeat the chain under heavier pressure.
+7. In the final sector, recover key wreck parts to unlock black box extraction.
+8. Extract the black box and receive a final score based on time and damage taken.
 
 ## Run Structure
 
 - Total ideal run length: 12-15 minutes
 - Relay sectors: 5
-- Final source sector: 1
+- Final recovery sector: 1
 - Total sectors per run: 6
-- Average time per sector: 1.5-2.5 minutes
+- Average time per sector: 2-2.5 minutes
+- Relay sectors use 2, 2, 3, 3, and 4 sub-relays, each followed by one warp relay; the final sector uses 3 wreck-part recoveries followed by black box extraction.
 
 Pacing by phase:
 
-- Early run: light hazards, simple readings, teaches scanning and relay activation.
-- Mid run: more debris, stronger interference, false echoes, tighter safe routes.
-- Final run: heaviest storm conditions and a direct push to the pirate wreck.
+- Early run: light hazards, simple readings, teaches scanning, sub-relays, and warp relay activation.
+- Mid run: more debris, stronger interference, false echoes, tighter safe routes, and longer objective chains.
+- Final run: heaviest storm conditions and a multi-stage wreck recovery before black box extraction.
 
 ## Narrative Frame
 
@@ -60,13 +62,13 @@ Years ago, the pirate dreadnought `Night Saint` vanished inside the storm belt w
 
 Narrative delivery should stay light:
 
-- Short transmission lines after each relay activation
+- Short transmission lines after each sector relay completion
 - A stronger final reveal at the wreck
 - Minimal exposition outside the run
 
 ## Moment-to-Moment Gameplay
 
-The player flies freely in a top-down arena using simple arcade controls rather than full Newtonian physics. The ship is guided by a signal indicator that points toward the current relay or final source, but storm interference makes it unreliable.
+The player flies freely in a top-down arena using simple arcade controls rather than full Newtonian physics. The ship is guided by a signal indicator that points toward the current active sub-relay, warp relay, wreck part, or black box target, but storm interference makes it unreliable.
 
 The player must:
 
@@ -74,7 +76,7 @@ The player must:
 - Avoid damage from storm hazards
 - Use scan pulses to reveal clearer information
 - Commit to routes even when the signal is partially scrambled
-- Hold position at relays long enough to activate them
+- Hold position at multiple objectives per sector long enough to activate them
 
 This keeps the game focused on interpretation, movement, and risk management rather than combat or inventory systems.
 
@@ -85,8 +87,8 @@ This keeps the game focused on interpretation, movement, and risk management rat
 - Run timer
 - Signal direction and strength indicator
 - Scan pulse with cooldown
-- Relay activation objective
-- Final source objective
+- Multi-stage relay sector objective chain
+- Multi-stage final recovery objective chain
 - Procedural sector generation
 - Hazard collisions and damage
 - Win screen and score summary
@@ -99,15 +101,17 @@ Each run generates a linear chain of six sectors. Each sector defines:
 
 - Arena size within a small range
 - Entry point
-- Relay position or final source position
+- Ordered objective nodes
 - Hazard density
 - One or two signal distortion modifiers
 
 Generation rules:
 
-- Always guarantee at least one viable path from spawn to objective.
+- Always guarantee at least one viable path from spawn through every objective stage.
+- Place objectives in mostly forward progression so sectors read as a chase, not backtracking.
 - Scatter hazards around the route and partially across it, but never fully block completion.
-- Increase density and distortion from sector to sector.
+- Cluster stronger pressure near later stages in each sector.
+- Increase stage count, density, and distortion from sector to sector.
 - Reuse a small set of hazard and layout patterns with shuffled parameters.
 
 This approach gives replayability while staying realistic for a jam scope.
@@ -162,19 +166,20 @@ For the 48-hour version, two distortion types are enough.
 
 Relays are the main progression checkpoints.
 
-- Each non-final sector has one relay buoy.
-- Reaching the relay begins an activation sequence.
+- Each non-final sector has 2-4 sub-relays and one locked warp relay.
+- Reaching a sub-relay begins an activation sequence.
 - Activation requires the player to stay near the relay for about 2 seconds.
-- Hazards remain active during activation, so approach and positioning matter.
-- Successful activation reveals the next path and plays a short transmission fragment.
+- The warp relay becomes available only after all sub-relays in the sector are online.
+- Hazards remain active during every activation, so later nodes in the chain are riskier than the first.
+- Successful warp relay activation reveals the next sector and plays a short transmission fragment.
 
 ## Final Sector
 
-The last sector resolves the signal into the pirate wreck's black box.
+The last sector resolves the signal into the pirate wreck's black box through the same staged structure used in relay sectors.
 
-- No relay, only the final source
+- Recover multiple key wreck parts before the final extraction point unlocks
 - Highest hazard density and interference
-- Objective is to reach the wreck and hold position to recover the black box
+- Objective is to recover the wreck parts, then hold position at the black box extraction point
 - Success immediately ends the run and shows the score screen
 
 This gives the game a clear ending and a satisfying final push.
@@ -205,9 +210,11 @@ The UI should feel like a lightweight cockpit overlay.
 
 Recommended objective states:
 
-- `Locate Relay`
-- `Activate Relay`
-- `Recover Black Box`
+- `Locate Sub-Relay`
+- `Activate Sub-Relay`
+- `Warp Relay Unlocked`
+- `Recover Wreck Part`
+- `Extract Black Box`
 
 ## Scoring
 
@@ -264,11 +271,11 @@ The presentation should sell cyberpunk mood without requiring large art producti
 Target content for the 48-hour build:
 
 - 1 player ship
-- 1 relay buoy prefab
-- 1 pirate wreck or black box endpoint prefab
+- 1 relay buoy prefab reused for sub-relays and warp relays
+- 1 pirate wreck objective family for wreck-part recovery and black box extraction
 - 3 hazard types
 - 2 signal distortion behaviors
-- 1 procedural sector generator
+- 1 procedural sector generator with staged objective chains
 - 1 win or score screen
 - 5-8 short transmission text lines
 
@@ -302,9 +309,9 @@ Only attempt these if the MVP is already stable and fun.
 
 ### Phase 2: Objective Flow
 
-- Relay objective
+- Multi-stage relay sector objectives
 - Activation hold behavior
-- Final source and win state
+- Multi-part final recovery and black box extraction
 
 ### Phase 3: Signal Systems
 
@@ -316,8 +323,8 @@ Only attempt these if the MVP is already stable and fun.
 ### Phase 4: Procedural Sectors
 
 - Sector generation pipeline
-- Spawn and objective placement
-- Guaranteed traversable route
+- Ordered stage placement
+- Guaranteed traversable route through every stage
 - Difficulty scaling across sectors
 
 ### Phase 5: Hazards and Scoring
@@ -332,7 +339,7 @@ Only attempt these if the MVP is already stable and fun.
 - UI pass
 - Transmission fragments
 - Audio and VFX pass
-- Balance and bug fixing
+- Pacing balance for 12-15 minute successful runs and bug fixing
 
 ## Minimum Shippable Fallback
 
@@ -340,6 +347,8 @@ If implementation time gets tight, cut to this version:
 
 - 4 sectors instead of 6
 - 2 hazard types instead of 3
+- Fixed 2 sub-relays plus 1 warp relay in each non-final sector
+- Final sector uses 2 wreck parts plus black box extraction
 - No boost
 - No moving obstacles
 - Score screen based only on time and remaining hull
@@ -348,4 +357,4 @@ This still preserves the full fantasy and run structure.
 
 ## Submission-Friendly Description
 
-`Ghost Frequency: Storm Relay` is a top-down neon space-tracing game about following the final transmission of a pirate flagship through a deadly ion storm. Restore lost relays, interpret distorted signals, dodge hazards, and race to the final wreck with the fastest time and least damage.
+`Ghost Frequency: Storm Relay` is a top-down neon space-tracing game about following the final transmission of a pirate flagship through a deadly ion storm. Restore drifting relay chains, interpret distorted signals, dodge hazards, and race to the final wreck with the fastest time and least damage.

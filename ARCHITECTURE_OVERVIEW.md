@@ -37,7 +37,8 @@ Key assumptions inherited from the GDD:
 
 - The game is a top-down 2D neon space-tracing game
 - A full run should take about 12-15 minutes when played well
-- Progression is built around 5 relay sectors and 1 final source sector
+- Progression is built around 5 relay sectors and 1 final recovery sector
+- Each sector is built from an ordered objective chain rather than a single objective point
 - Replayability comes from procedural sector generation, not a large handcrafted world
 - Scoring is based on time used and damage taken
 - The final objective is the recovered black box of the pirate ship `Night Saint`
@@ -114,6 +115,7 @@ scripts/
 	RunTimer.cs
   data/
 	SectorDefinition.cs
+	ObjectiveStageData.cs
 	HazardSpawnData.cs
 	RunResult.cs
 	SignalReading.cs
@@ -172,12 +174,12 @@ Expected run sequence:
 1. `GameManager` performs basic bootstrap work such as runtime input setup if needed.
 2. `RunController` creates the run seed and resets per-run state.
 3. `RunController` requests the first sector from `SectorGenerator`.
-4. `SectorGenerator` spawns the objective and hazards into `SectorRoot`.
-5. `SignalSystem` produces signal feedback based on the active objective and sector distortion.
-6. The player navigates, scans, and reaches the relay.
-7. Relay activation completes and `RunController` advances to the next sector.
-8. After the fifth relay sector, the final source sector is generated.
-9. The player reaches the pirate wreck and recovers the black box.
+4. `SectorGenerator` spawns the first stage objective and hazards into `SectorRoot`.
+5. `SignalSystem` produces signal feedback based on the active objective stage and sector distortion.
+6. The player navigates, scans, and completes stage objectives in order.
+7. `RunController` unlocks the sector terminal objective after all prerequisite stages are complete.
+8. The player completes the warp relay and `RunController` advances to the next sector.
+9. In the final sector, the player recovers wreck parts before unlocking black box extraction.
 10. `ScoreSystem` builds the final result and the UI switches to the score screen.
 
 Failure flow:
@@ -210,8 +212,10 @@ Purpose:
 
 - Own the run lifecycle
 - Track current sector index
+- Track current objective stage index
 - Track active objective
 - Decide whether the run is active, completed, or failed
+- Track sector completion state
 - Coordinate transitions between sectors
 
 This is the main flow controller and likely the most important gameplay system.
@@ -220,19 +224,18 @@ Suggested run states:
 
 - `Intro`
 - `InSector`
-- `ActivatingRelay`
-- `Transition`
-- `FinalRecovery`
 - `RunComplete`
 - `RunFailed`
+
+Sector-local progression should be represented by stage data and indices rather than extra top-level run states.
 
 ### SectorGenerator
 
 Purpose:
 
 - Generate one playable sector at a time
-- Place spawn, objective, hazards, and distortion data
-- Guarantee a traversable route from entry to objective
+- Place spawn, ordered objective stages, hazards, and distortion data
+- Guarantee a traversable route from entry through the full objective chain
 - Scale density and difficulty by sector index
 
 Important constraint:
@@ -293,7 +296,7 @@ The ship should remain a thin entity node rather than becoming the owner of all 
 
 Purpose:
 
-- Represent the sector objective in sectors 1-5
+- Represent configurable sector activation nodes in sectors 1-5
 - Expose range checks and activation completion
 - Notify `RunController` when activated
 
@@ -301,7 +304,7 @@ Purpose:
 
 Purpose:
 
-- Represent the final objective in the last sector
+- Represent configurable final-sector recovery nodes in the last sector
 - Trigger end-of-run recovery flow
 - Provide the narrative endpoint of the pirate transmission trail
 
@@ -328,7 +331,7 @@ Purpose:
 ### RelayActivationComponent
 
 - Handles hold-to-activate timing
-- Reports completion to the relay or wreck owner
+- Reports completion to the owning objective node
 
 ### HazardDamageComponent
 
@@ -352,9 +355,19 @@ Should contain:
 - seed
 - arena bounds
 - spawn point
-- objective point
+- ordered objective stages
 - hazard density
 - distortion modifiers
+
+### ObjectiveStageData
+
+Should contain:
+
+- stage kind
+- position
+- activation duration
+- objective label
+- optional visual or narrative tag
 
 ### HazardSpawnData
 
@@ -393,18 +406,18 @@ Per sector process:
 
 1. Derive a sector seed from the run seed and sector index.
 2. Pick arena bounds and difficulty parameters.
-3. Place entry and objective points with meaningful travel distance.
-4. Reserve a rough viable corridor between them.
-5. Populate hazards around that corridor.
+3. Generate an ordered chain of objective anchors with meaningful travel distance.
+4. Reserve a rough viable corridor through the full chain.
+5. Populate hazards around that route, with stronger pressure near later stages.
 6. Add one or two distortion modifiers.
 7. Instantiate the generated content into `SectorRoot`.
 
 Progression expectations:
 
-- Sector 1 should teach the loop clearly.
-- Sectors 2-4 should escalate interference and routing pressure.
-- Sector 5 should be the hardest relay.
-- Sector 6 should be the final push to the pirate wreck.
+- Sector 1 should teach sub-relays and warp relay flow clearly.
+- Sectors 2-4 should escalate stage count, interference, and routing pressure.
+- Sector 5 should be the hardest relay chain.
+- Sector 6 should be a multi-part wreck recovery ending in black box extraction.
 
 ## Hazards
 
@@ -454,6 +467,7 @@ HUD data sources:
 - scanner cooldown from the scanner component
 - signal direction and strength from `SignalSystem`
 - objective state text from `RunController`
+- sector-local stage progress from `RunController`
 
 Recommended HUD elements:
 
@@ -463,6 +477,7 @@ Recommended HUD elements:
 - signal arrow
 - signal strength meter
 - objective label
+- stage progress such as `Node 2/4` or `Wreck Part 1/3`
 
 The score screen should consume a `RunResult` and avoid recomputing gameplay values.
 
@@ -490,7 +505,7 @@ The current design does not need:
 - a giant world streaming system
 - a separate hacking minigame architecture
 
-If one of these becomes necessary, update the GDD first, then update this document.
+If pacing expands further, continue increasing objective-chain and hazard pressure before revisiting combat. If one of these becomes necessary, update the GDD first, then update this document.
 
 ## Implementation Priorities
 
@@ -498,11 +513,11 @@ Recommended order of implementation:
 
 1. `main.tscn`, `GameManager`, and `RunController`
 2. `PlayerShip` with movement and hull
-3. `RelayBuoy` objective loop
-4. `SectorGenerator` with one hazard type
-5. `SignalSystem` and HUD signal display
-6. Remaining hazards and scoring
-7. Final sector and score screen polish
+3. Configurable objective nodes and ordered stage data
+4. `RunController` sector-local progression and terminal objective unlocks
+5. `SectorGenerator` with one hazard type
+6. `SignalSystem` and HUD signal display
+7. Remaining hazards, pacing, and score screen polish
 
 ## Maintenance Notes
 

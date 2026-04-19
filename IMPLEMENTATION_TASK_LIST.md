@@ -33,7 +33,7 @@ The player can move through a generated sector, read a signal, activate a relay,
 
 ### Milestone 3: Full run
 
-The game supports the complete 5-relay-plus-final-sector structure with procedural variation.
+The game supports complete staged relay sectors plus a staged final recovery sector, with procedural variation and target successful run pacing.
 
 ### Milestone 4: Submission-ready
 
@@ -156,6 +156,7 @@ Tasks:
 - Implement `PirateWreck`.
 - Add activation zones or proximity checks.
 - Add `RelayActivationComponent` for hold-to-activate behavior.
+- Make objectives configurable enough to represent sub-relays, warp relays, wreck parts, and black box extraction.
 - Expose completion events.
 
 Definition of done:
@@ -172,8 +173,11 @@ Dependencies:
 Tasks:
 
 - Make `RunController` respond to relay completion.
-- Advance sector index on relay activation.
-- Switch from relay objectives to the final pirate wreck objective on the last sector.
+- Track stage completion within a sector.
+- Unlock the warp relay after all sub-relays are activated.
+- Unlock black box extraction after all wreck parts are recovered.
+- Advance sector index only after the sector terminal objective completes.
+- Switch from relay sectors to the final pirate wreck recovery chain on the last sector.
 - End the run on final recovery.
 - End the run on player death.
 
@@ -235,6 +239,7 @@ Tasks:
 - Display scan cooldown.
 - Display signal direction and strength.
 - Display current objective text.
+- Display sector-local objective progress.
 
 Definition of done:
 
@@ -249,8 +254,9 @@ Dependencies:
 Tasks:
 
 - Add `SectorDefinition`.
+- Add `ObjectiveStageData`.
 - Add `HazardSpawnData`.
-- Define the data needed to describe one sector.
+- Define the data needed to describe one sector as an ordered objective stage list plus hazard data.
 - Add a deterministic seed derivation strategy from run seed plus sector index.
 
 Definition of done:
@@ -268,9 +274,9 @@ Tasks:
 
 - Implement `SectorGenerator`.
 - Generate arena bounds.
-- Generate spawn and objective positions.
-- Reserve a viable corridor between them.
-- Spawn only the objective initially.
+- Generate spawn and ordered objective stage positions.
+- Reserve a viable corridor through the full stage chain.
+- Spawn only the first objective stage initially.
 
 Definition of done:
 
@@ -286,8 +292,8 @@ Dependencies:
 Tasks:
 
 - Make `RunController` request a fresh sector at run start.
-- Request a new generated sector after each objective completion.
-- Generate 5 relay sectors followed by 1 final sector.
+- Request a new generated sector after each sector completion.
+- Generate 5 relay sectors followed by 1 final recovery sector.
 - Reset player position on sector entry.
 
 Definition of done:
@@ -324,7 +330,7 @@ Dependencies:
 Tasks:
 
 - Balance movement, scan cooldown, and relay activation time.
-- Verify the first sector teaches the loop clearly.
+- Verify the first sector teaches sub-relays followed by warp relay clearly.
 - Verify a run can be won or lost.
 - Trim anything non-essential that blocks a playable build.
 
@@ -415,9 +421,9 @@ Dependencies:
 
 Tasks:
 
-- Add short relay-completion transmission lines.
+- Add short sector-completion transmission lines.
 - Add the final `Night Saint` recovery line.
-- Hook narrative delivery into relay and final recovery events.
+- Hook narrative delivery into sector completion and final recovery events.
 
 Definition of done:
 
@@ -433,6 +439,7 @@ Dependencies:
 Tasks:
 
 - Apply neon colors to HUD and objective feedback.
+- Make sub-relays, unlocked warp relays, wreck parts, and final extraction visually distinct.
 - Make hazards visually distinct and readable.
 - Add signal pulse and interference feedback.
 - Add basic transition polish between sectors.
@@ -471,7 +478,7 @@ Dependencies:
 
 Tasks:
 
-- Tune sector length and density so a strong run lasts about 12-15 minutes.
+- Tune stage counts, route length, hazard clustering, and activation pressure so a strong run lasts about 12-15 minutes.
 - Check that early sectors teach and late sectors escalate.
 - Check that damage and time scoring both matter.
 - Remove frustration spikes caused by unfair generation.
@@ -545,19 +552,20 @@ Everything else is secondary to shipping a full playable run.
 
 If implementation slips, cut in this order:
 
-1. Remove `LightningArc`.
-2. Simplify `Echo` behavior.
-3. Reduce total sectors from 6 to 4.
-4. Remove boost entirely if it was added.
-5. Simplify score to `time + hull remaining` display.
-6. Reduce narrative text to a minimal intro and final recovery line.
+1. Simplify the final sector to 2 wreck parts plus black box extraction.
+2. Reduce relay sectors to fixed 2 sub-relays plus 1 warp relay.
+3. Remove `LightningArc`.
+4. Simplify `Echo` behavior.
+5. Reduce total sectors from 6 to 4.
+6. Simplify score to `time + hull remaining` display.
+7. Reduce narrative text to sector-completion lines and the final recovery line.
 
 Do not cut:
 
 - signal reading
 - scanning
-- relay progression
-- final sector ending
+- multi-stage relay progression
+- staged final recovery and black box extraction
 - score or result screen
 
 Those systems are the identity of the game.
