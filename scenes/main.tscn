@@ -9,9 +9,12 @@
 [ext_resource type="Script" uid="uid://u8wv5fry3pvm" path="res://scripts/Main.cs" id="6_main"]
 [ext_resource type="PackedScene" path="res://scenes/ui/score_screen.tscn" id="7_score"]
 [ext_resource type="PackedScene" path="res://scenes/ui/crt_overlay.tscn" id="8_crt"]
+[ext_resource type="PackedScene" path="res://scenes/ui/deep_space_background.tscn" id="9_bg"]
 
 [node name="Main" type="Node" unique_id=128156468]
 script = ExtResource("6_main")
+
+[node name="DeepSpaceBackground" parent="." instance=ExtResource("9_bg")]
 
 [node name="GameManager" parent="." unique_id=960754168 instance=ExtResource("1_gm")]
 
