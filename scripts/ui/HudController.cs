@@ -25,18 +25,18 @@ public partial class HudController : CanvasLayer
 
     public override void _Ready()
     {
-        _timerLabel = GetNode<Label>("Root/Panel/VBox/TimerLabel");
-        _hullLabel = GetNode<Label>("Root/Panel/VBox/HullLabel");
-        _hullBar = GetNode<ProgressBar>("Root/Panel/VBox/HullBar");
-        _scannerLabel = GetNode<Label>("Root/Panel/VBox/ScannerLabel");
-        _scannerBar = GetNode<ProgressBar>("Root/Panel/VBox/ScannerBar");
-        _objectiveLabel = GetNode<Label>("Root/Panel/VBox/ObjectiveLabel");
-        _stageProgressLabel = GetNode<Label>("Root/Panel/VBox/StageProgressLabel");
-        _activationLabel = GetNode<Label>("Root/Panel/VBox/ActivationLabel");
-        _activationBar = GetNode<ProgressBar>("Root/Panel/VBox/ActivationBar");
-        _sectorLabel = GetNode<Label>("Root/Panel/VBox/SectorLabel");
-        _transmissionLabel = GetNode<Label>("Root/Panel/VBox/TransmissionLabel");
-        _stateLabel = GetNode<Label>("Root/Panel/VBox/StateLabel");
+        _timerLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/TimerLabel");
+        _hullLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/HullLabel");
+        _hullBar = GetNode<ProgressBar>("Root/Panel/MarginContainer/VBox/HullBar");
+        _scannerLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/ScannerLabel");
+        _scannerBar = GetNode<ProgressBar>("Root/Panel/MarginContainer/VBox/ScannerBar");
+        _objectiveLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/ObjectiveLabel");
+        _stageProgressLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/StageProgressLabel");
+        _activationLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/ActivationLabel");
+        _activationBar = GetNode<ProgressBar>("Root/Panel/MarginContainer/VBox/ActivationBar");
+        _sectorLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/SectorLabel");
+        _transmissionLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/TransmissionLabel");
+        _stateLabel = GetNode<Label>("Root/Panel/MarginContainer/VBox/StateLabel");
         _scannerOverlay = GetNode<Control>("Root/ScannerOverlay");
         _scannerRing = GetNode<Control>("Root/ScannerOverlay/ScannerRing");
         _scannerRingBlip = GetNode<ColorRect>("Root/ScannerOverlay/ScannerRing/ScannerRingBlip");
@@ -81,7 +81,7 @@ public partial class HudController : CanvasLayer
         _activationBar.Value = activationProgress;
         _activationBar.Visible = isPlayerInRange || activationProgress > 0.0f;
         _activationLabel.Text = isPlayerInRange
-            ? (requiresInteract ? "Activation: Hold E" : "Activation: In Progress")
+            ? (requiresInteract ? "Activation: Hold E / A" : "Activation: In Progress")
             : activationProgress > 0.0f
                 ? "Activation: Stabilizing"
                 : "Activation: Get Close";

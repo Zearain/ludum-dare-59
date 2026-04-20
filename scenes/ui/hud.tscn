@@ -1,11 +1,11 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://c0eq1tpyhu55q"]
 
-[ext_resource type="Script" path="res://scripts/ui/HudController.cs" id="1_hud"]
+[ext_resource type="Script" uid="uid://cuqvb2ykscudx" path="res://scripts/ui/HudController.cs" id="1_hud"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" unique_id=1415930020]
 script = ExtResource("1_hud")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1593362610]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,70 +13,77 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="Root"]
+[node name="Panel" type="PanelContainer" parent="Root" unique_id=545017168]
 layout_mode = 1
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 340.0
 offset_bottom = 380.0
 
-[node name="VBox" type="VBoxContainer" parent="Root/Panel"]
+[node name="MarginContainer" type="MarginContainer" parent="Root/Panel" unique_id=2121366619]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel/MarginContainer" unique_id=285911141]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="TimerLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="TimerLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1805820432]
 layout_mode = 2
 text = "Time: 00:00"
 
-[node name="HullLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="HullLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1607023911]
 layout_mode = 2
 text = "Hull: 100/100"
 
-[node name="HullBar" type="ProgressBar" parent="Root/Panel/VBox"]
+[node name="HullBar" type="ProgressBar" parent="Root/Panel/MarginContainer/VBox" unique_id=1423717158]
 layout_mode = 2
-max_value = 100.0
 value = 100.0
 
-[node name="ScannerLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="ScannerLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=52004680]
 layout_mode = 2
 text = "Scanner: Ready"
 
-[node name="ScannerBar" type="ProgressBar" parent="Root/Panel/VBox"]
+[node name="ScannerBar" type="ProgressBar" parent="Root/Panel/MarginContainer/VBox" unique_id=1754627093]
 layout_mode = 2
 max_value = 1.0
 value = 1.0
 
-[node name="ObjectiveLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="ObjectiveLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1894233967]
 layout_mode = 2
 text = "Objective: --"
 
-[node name="StageProgressLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="StageProgressLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1741245976]
 layout_mode = 2
 text = "Stage: --"
 
-[node name="ActivationLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="ActivationLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=885321558]
 layout_mode = 2
 text = "Activation: --"
 
-[node name="ActivationBar" type="ProgressBar" parent="Root/Panel/VBox"]
+[node name="ActivationBar" type="ProgressBar" parent="Root/Panel/MarginContainer/VBox" unique_id=1336267261]
+visible = false
 layout_mode = 2
 max_value = 1.0
-visible = false
 
-[node name="SectorLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="SectorLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1048142241]
 layout_mode = 2
 text = "Sector: --"
 
-[node name="TransmissionLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="TransmissionLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1949635050]
 layout_mode = 2
-autowrap_mode = 2
 text = "Transmission: --"
+autowrap_mode = 2
 
-[node name="StateLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="StateLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1445684064]
 layout_mode = 2
 autowrap_mode = 2
 
-[node name="ScannerOverlay" type="Control" parent="Root"]
+[node name="ScannerOverlay" type="Control" parent="Root" unique_id=1762788772]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -84,16 +91,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-visible = false
 
-[node name="ScannerRing" type="Control" parent="Root/ScannerOverlay"]
+[node name="ScannerRing" type="Control" parent="Root/ScannerOverlay" unique_id=1037595079]
+visible = false
 custom_minimum_size = Vector2(96, 96)
-layout_mode = 0
+anchors_preset = 0
 offset_right = 96.0
 offset_bottom = 96.0
-visible = false
 
-[node name="ScannerRingOutlineTop" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+[node name="ScannerRingOutlineTop" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing" unique_id=5260400]
 layout_mode = 0
 offset_left = 22.0
 offset_top = 4.0
@@ -101,7 +107,7 @@ offset_right = 74.0
 offset_bottom = 6.0
 color = Color(0.25, 0.55, 0.7, 0.55)
 
-[node name="ScannerRingOutlineBottom" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+[node name="ScannerRingOutlineBottom" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing" unique_id=1235722915]
 layout_mode = 0
 offset_left = 22.0
 offset_top = 90.0
@@ -109,7 +115,7 @@ offset_right = 74.0
 offset_bottom = 92.0
 color = Color(0.25, 0.55, 0.7, 0.55)
 
-[node name="ScannerRingOutlineLeft" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+[node name="ScannerRingOutlineLeft" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing" unique_id=512034417]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 22.0
@@ -117,7 +123,7 @@ offset_right = 6.0
 offset_bottom = 74.0
 color = Color(0.25, 0.55, 0.7, 0.55)
 
-[node name="ScannerRingOutlineRight" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+[node name="ScannerRingOutlineRight" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing" unique_id=1889438061]
 layout_mode = 0
 offset_left = 90.0
 offset_top = 22.0
@@ -125,18 +131,18 @@ offset_right = 92.0
 offset_bottom = 74.0
 color = Color(0.25, 0.55, 0.7, 0.55)
 
-[node name="ScannerRingBlip" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing"]
+[node name="ScannerRingBlip" type="ColorRect" parent="Root/ScannerOverlay/ScannerRing" unique_id=906066525]
+visible = false
 custom_minimum_size = Vector2(10, 10)
 layout_mode = 0
 offset_right = 10.0
 offset_bottom = 10.0
 color = Color(0.35, 0.95, 1, 0.95)
-visible = false
 
-[node name="ScannerOuterBlip" type="ColorRect" parent="Root/ScannerOverlay"]
+[node name="ScannerOuterBlip" type="ColorRect" parent="Root/ScannerOverlay" unique_id=429494953]
+visible = false
 custom_minimum_size = Vector2(14, 14)
 layout_mode = 0
 offset_right = 14.0
 offset_bottom = 14.0
 color = Color(0.35, 0.95, 1, 0.9)
-visible = false

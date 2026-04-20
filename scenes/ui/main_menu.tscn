@@ -38,18 +38,25 @@ offset_bottom = 460.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Root/Panel" unique_id=1202372952]
+[node name="MarginContainer" type="MarginContainer" parent="Root/Panel" unique_id=533050733]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel/MarginContainer" unique_id=1202372952]
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_constants/separation = 18
 
-[node name="TitleLabel" type="Label" parent="Root/Panel/VBox" unique_id=1769039523]
+[node name="TitleLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1769039523]
 layout_mode = 2
 theme_override_font_sizes/font_size = 48
 text = "Ghost Frequency: Storm Relay"
 horizontal_alignment = 1
 
-[node name="NarrativeLabel" type="Label" parent="Root/Panel/VBox" unique_id=1248834510]
+[node name="NarrativeLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1248834510]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Restore drifting storm relays to reconstruct the final transmission of the pirate dreadnought Night Saint.
@@ -58,7 +65,7 @@ Trace the signal through hostile space, survive the storm, and recover the black
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="GameplayLabel" type="Label" parent="Root/Panel/VBox" unique_id=2020158096]
+[node name="GameplayLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=2020158096]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "How to play:
@@ -68,7 +75,7 @@ Clear all relay sectors, then recover the final black box before your hull gives
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="ControlsLabel" type="Label" parent="Root/Panel/VBox" unique_id=1742287374]
+[node name="ControlsLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1742287374]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "Controls:
@@ -80,27 +87,27 @@ Enter / A: Confirm"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="PromptLabel" type="Label" parent="Root/Panel/VBox" unique_id=1061263875]
+[node name="PromptLabel" type="Label" parent="Root/Panel/MarginContainer/VBox" unique_id=1061263875]
 layout_mode = 2
 text = "Choose an option to begin"
 horizontal_alignment = 1
 
-[node name="MarginContainer" type="MarginContainer" parent="Root/Panel/VBox" unique_id=2033704907]
+[node name="MarginContainer" type="MarginContainer" parent="Root/Panel/MarginContainer/VBox" unique_id=2033704907]
 layout_mode = 2
-theme_override_constants/margin_left = 128
-theme_override_constants/margin_right = 128
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_right = 64
 
-[node name="Buttons" type="VBoxContainer" parent="Root/Panel/VBox/MarginContainer" unique_id=1625858977]
+[node name="Buttons" type="VBoxContainer" parent="Root/Panel/MarginContainer/VBox/MarginContainer" unique_id=1625858977]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="StartButton" type="Button" parent="Root/Panel/VBox/MarginContainer/Buttons" unique_id=17262344]
+[node name="StartButton" type="Button" parent="Root/Panel/MarginContainer/VBox/MarginContainer/Buttons" unique_id=17262344]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 text = "Start"
 
-[node name="QuitButton" type="Button" parent="Root/Panel/VBox/MarginContainer/Buttons" unique_id=1512985303]
+[node name="QuitButton" type="Button" parent="Root/Panel/MarginContainer/VBox/MarginContainer/Buttons" unique_id=1512985303]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
