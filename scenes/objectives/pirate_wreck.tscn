@@ -1,18 +1,22 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://uuk4aqcoo60l"]
 
-[ext_resource type="Script" path="res://scripts/entities/PirateWreck.cs" id="1_script"]
-[ext_resource type="Script" path="res://scripts/components/RelayActivationComponent.cs" id="2_activation"]
+[ext_resource type="Script" uid="uid://cu4s51c2uvmxl" path="res://scripts/entities/PirateWreck.cs" id="1_script"]
+[ext_resource type="Script" uid="uid://s1de5p8qh78d" path="res://scripts/components/RelayActivationComponent.cs" id="2_activation"]
+[ext_resource type="AudioStream" uid="uid://caycnud8ljmhb" path="res://assets/sounds/BT Vol. 3 - Broken Digital Scan 005 (free version).wav" id="2_fg43i"]
 
-[node name="PirateWreck" type="Node2D"]
+[node name="PirateWreck" type="Node2D" unique_id=1343516506]
 script = ExtResource("1_script")
 
-[node name="Visual" type="Polygon2D" parent="."]
+[node name="Visual" type="Polygon2D" parent="." unique_id=973582448]
 color = Color(1, 0.7, 0.25, 0.95)
 polygon = PackedVector2Array(-18, -8, -6, -16, 12, -12, 18, 0, 8, 14, -12, 16, -20, 4)
 
-[node name="VisualBeacon" type="Polygon2D" parent="."]
+[node name="VisualBeacon" type="Polygon2D" parent="." unique_id=1788146731]
 color = Color(1, 0.9, 0.35, 0.28)
 polygon = PackedVector2Array(0, -28, 20, 0, 0, 28, -20, 0)
 
-[node name="RelayActivationComponent" type="Node" parent="."]
+[node name="ActivationAudio" type="AudioStreamPlayer" parent="." unique_id=197199702]
+stream = ExtResource("2_fg43i")
+
+[node name="RelayActivationComponent" type="Node" parent="." unique_id=1587431183]
 script = ExtResource("2_activation")

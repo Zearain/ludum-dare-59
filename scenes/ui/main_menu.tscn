@@ -32,9 +32,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -640.0
-offset_top = -400.0
+offset_top = -460.0
 offset_right = 640.0
-offset_bottom = 400.0
+offset_bottom = 460.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -58,9 +58,31 @@ Trace the signal through hostile space, survive the storm, and recover the black
 horizontal_alignment = 1
 autowrap_mode = 2
 
+[node name="GameplayLabel" type="Label" parent="Root/Panel/VBox" unique_id=2020158096]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "How to play:
+Use scan pulses to lock onto the active objective, then steer through hazards and hold position to stabilize each relay.
+
+Clear all relay sectors, then recover the final black box before your hull gives out."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="ControlsLabel" type="Label" parent="Root/Panel/VBox" unique_id=1742287374]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Controls:
+WASD / Left Stick: Move
+Space / X: Scan Pulse
+Hold E / A: Activate Objective
+Arrows or D-Pad: Navigate Menu
+Enter / A: Confirm"
+horizontal_alignment = 1
+autowrap_mode = 2
+
 [node name="PromptLabel" type="Label" parent="Root/Panel/VBox" unique_id=1061263875]
 layout_mode = 2
-text = "Use keyboard or gamepad to navigate"
+text = "Choose an option to begin"
 horizontal_alignment = 1
 
 [node name="MarginContainer" type="MarginContainer" parent="Root/Panel/VBox" unique_id=2033704907]

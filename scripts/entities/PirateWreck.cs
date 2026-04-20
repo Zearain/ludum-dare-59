@@ -25,6 +25,7 @@ public partial class PirateWreck : Node2D, IActivatableObjective, ISignalSource
     public bool IsPlayerInActivationRange => _activationComponent?.IsPlayerInActivationRange ?? false;
 
     private RelayActivationComponent _activationComponent = null!;
+    private AudioStreamPlayer _activationAudio = null!;
     private Polygon2D _visual = null!;
     private string _objectiveLabel = "Recover Wreck Part";
     private string _completedLabel = "Wreck part secured";
@@ -32,7 +33,9 @@ public partial class PirateWreck : Node2D, IActivatableObjective, ISignalSource
     public override void _Ready()
     {
         _activationComponent = GetNode<RelayActivationComponent>("RelayActivationComponent");
+        _activationAudio = GetNode<AudioStreamPlayer>("ActivationAudio");
         _visual = GetNode<Polygon2D>("Visual");
+        _activationComponent.ActivationLoopPlayer = _activationAudio;
         _activationComponent.ActivationCompleted += OnActivationCompleted;
     }
 
@@ -41,6 +44,7 @@ public partial class PirateWreck : Node2D, IActivatableObjective, ISignalSource
         if (_activationComponent is not null)
         {
             _activationComponent.ActivationCompleted -= OnActivationCompleted;
+            _activationComponent.ActivationLoopPlayer = null;
         }
     }
 

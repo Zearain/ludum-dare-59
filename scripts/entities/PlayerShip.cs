@@ -8,6 +8,8 @@ using LudumDare59.Components;
 
 public partial class PlayerShip : CharacterBody2D
 {
+    private const float DamageAlarmHoldSeconds = 0.2f;
+
     public ShipInputComponent InputComponent { get; private set; } = null!;
 
     public ShipMovementComponent MovementComponent { get; private set; } = null!;
@@ -19,6 +21,12 @@ public partial class PlayerShip : CharacterBody2D
     public CollisionPolygon2D CollisionPolygon { get; private set; } = null!;
 
     public Polygon2D Visual { get; private set; } = null!;
+
+    public AudioStreamPlayer DamageAlarmPlayer { get; private set; } = null!;
+
+    public AudioStreamPlayer DeathExplosionPlayer { get; private set; } = null!;
+
+    public AudioStreamPlayer ScanActivationPlayer { get; private set; } = null!;
 
     public bool IsDead => HullComponent.IsDepleted;
 
@@ -32,6 +40,8 @@ public partial class PlayerShip : CharacterBody2D
 
     public event Action<float, float>? HullChanged;
 
+    private float _damageAlarmTimeRemaining;
+
     public override void _Ready()
     {
         InputComponent = GetNode<ShipInputComponent>("%ShipInputComponent");
@@ -40,10 +50,13 @@ public partial class PlayerShip : CharacterBody2D
         ScannerComponent = GetNode<ScannerComponent>("%ScannerComponent");
         CollisionPolygon = GetNode<CollisionPolygon2D>("%CollisionPolygon2D");
         Visual = GetNode<Polygon2D>("%Visual");
-
+        DamageAlarmPlayer = GetNode<AudioStreamPlayer>("%DamageAlarmPlayer");
+        DeathExplosionPlayer = GetNode<AudioStreamPlayer>("%DeathExplosionPlayer");
+        ScanActivationPlayer = GetNode<AudioStreamPlayer>("%ScanActivationPlayer");
 
         HullComponent.HullChanged += OnHullChanged;
         HullComponent.HullDepleted += OnHullDepleted;
+        ScannerComponent.ScanTriggered += OnScanTriggered;
         AddToGroup("player_ship");
     }
 
@@ -53,6 +66,11 @@ public partial class PlayerShip : CharacterBody2D
         {
             HullComponent.HullChanged -= OnHullChanged;
             HullComponent.HullDepleted -= OnHullDepleted;
+        }
+
+        if (ScannerComponent is not null)
+        {
+            ScannerComponent.ScanTriggered -= OnScanTriggered;
         }
 
         RemoveFromGroup("player_ship");
@@ -74,12 +92,40 @@ public partial class PlayerShip : CharacterBody2D
         CollisionPolygon.Rotation = facingAngle;
     }
 
+    public override void _Process(double delta)
+    {
+        if (_damageAlarmTimeRemaining <= 0.0f)
+        {
+            return;
+        }
+
+        _damageAlarmTimeRemaining = Mathf.Max(0.0f, _damageAlarmTimeRemaining - (float)delta);
+        if (_damageAlarmTimeRemaining > 0.0f)
+        {
+            if (!DamageAlarmPlayer.Playing)
+            {
+                DamageAlarmPlayer.Play();
+            }
+
+            return;
+        }
+
+        if (DamageAlarmPlayer.Playing)
+        {
+            DamageAlarmPlayer.Stop();
+        }
+    }
+
     public void ResetForRun(Vector2 spawnPoint)
     {
         GlobalPosition = spawnPoint;
         MovementComponent.ResetMotion();
         ScannerComponent.ResetScanner();
         HullComponent.ResetHull();
+        _damageAlarmTimeRemaining = 0.0f;
+        DamageAlarmPlayer.Stop();
+        DeathExplosionPlayer.Stop();
+        ScanActivationPlayer.Stop();
     }
 
     public void PrepareForSector(Vector2 spawnPoint)
@@ -90,7 +136,21 @@ public partial class PlayerShip : CharacterBody2D
 
     public void ApplyDamage(float amount)
     {
+        if (amount <= 0.0f || IsDead)
+        {
+            return;
+        }
+
+        float hullBeforeDamage = HullCurrent;
         HullComponent.ApplyDamage(amount);
+        if (HullCurrent < hullBeforeDamage && !IsDead)
+        {
+            _damageAlarmTimeRemaining = DamageAlarmHoldSeconds;
+            if (!DamageAlarmPlayer.Playing)
+            {
+                DamageAlarmPlayer.Play();
+            }
+        }
     }
 
     private void OnHullChanged(float currentHull, float maxHull)
@@ -100,6 +160,16 @@ public partial class PlayerShip : CharacterBody2D
 
     private void OnHullDepleted()
     {
+        _damageAlarmTimeRemaining = 0.0f;
+        DamageAlarmPlayer.Stop();
+        DeathExplosionPlayer.Stop();
+        DeathExplosionPlayer.Play();
         Died?.Invoke();
+    }
+
+    private void OnScanTriggered()
+    {
+        ScanActivationPlayer.Stop();
+        ScanActivationPlayer.Play();
     }
 }

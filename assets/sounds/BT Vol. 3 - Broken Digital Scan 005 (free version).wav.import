@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://caycnud8ljmhb"
+path="res://.godot/imported/BT Vol. 3 - Broken Digital Scan 005 (free version).wav-b6c9c330886b3a71b02f9abd5debebcc.sample"
+
+[deps]
+
+source_file="res://assets/sounds/BT Vol. 3 - Broken Digital Scan 005 (free version).wav"
+dest_files=["res://.godot/imported/BT Vol. 3 - Broken Digital Scan 005 (free version).wav-b6c9c330886b3a71b02f9abd5debebcc.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

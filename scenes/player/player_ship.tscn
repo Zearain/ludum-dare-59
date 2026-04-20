@@ -5,6 +5,9 @@
 [ext_resource type="Script" uid="uid://cmklyxkmkbpv1" path="res://scripts/components/ShipHullComponent.cs" id="3_hull"]
 [ext_resource type="Script" uid="uid://dchks200sx85e" path="res://scripts/components/ScannerComponent.cs" id="4_scan"]
 [ext_resource type="Script" uid="uid://br8ngpfnyaef4" path="res://scripts/components/ShipInputComponent.cs" id="5_s1a8k"]
+[ext_resource type="AudioStream" uid="uid://b1ahvnw1dc0nf" path="res://assets/sounds/Sci_Fi_Alarm_Loop_08.wav" id="6_alarm"]
+[ext_resource type="AudioStream" uid="uid://xgc7s07dolq7" path="res://assets/sounds/explosion12.wav" id="7_explosion"]
+[ext_resource type="AudioStream" uid="uid://di5yg8ri3gmx" path="res://assets/sounds/Ring_Pitched_Down.wav" id="8_scan_ring"]
 
 [node name="PlayerShip" type="CharacterBody2D" unique_id=655004833]
 script = ExtResource("1_script")
@@ -34,3 +37,16 @@ polygon = PackedVector2Array(0, -18, 12, 10, 0, 4, -12, 10)
 [node name="ShipInputComponent" type="Node" parent="." unique_id=621650088]
 unique_name_in_owner = true
 script = ExtResource("5_s1a8k")
+
+[node name="DamageAlarmPlayer" type="AudioStreamPlayer" parent="." unique_id=1217669686]
+unique_name_in_owner = true
+stream = ExtResource("6_alarm")
+
+[node name="DeathExplosionPlayer" type="AudioStreamPlayer" parent="." unique_id=718732919]
+unique_name_in_owner = true
+process_mode = 3
+stream = ExtResource("7_explosion")
+
+[node name="ScanActivationPlayer" type="AudioStreamPlayer" parent="." unique_id=1635402634]
+unique_name_in_owner = true
+stream = ExtResource("8_scan_ring")
