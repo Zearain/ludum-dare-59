@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://dlq1wkrv3stid"]
+
+[ext_resource type="Script" uid="uid://bupipk62rqjyg" path="res://scripts/ui/MainMenuController.cs" id="1_main_menu"]
+
+[node name="MainMenu" type="CanvasLayer" unique_id=867324997]
+process_mode = 2
+layer = 4
+script = ExtResource("1_main_menu")
+
+[node name="Root" type="Control" parent="." unique_id=1337608329]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Shade" type="ColorRect" parent="Root" unique_id=533330175]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.78)
+
+[node name="Panel" type="PanelContainer" parent="Root" unique_id=1614060362]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -640.0
+offset_top = -400.0
+offset_right = 640.0
+offset_bottom = 400.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel" unique_id=1202372952]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 18
+
+[node name="TitleLabel" type="Label" parent="Root/Panel/VBox" unique_id=1769039523]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Ghost Frequency: Storm Relay"
+horizontal_alignment = 1
+
+[node name="NarrativeLabel" type="Label" parent="Root/Panel/VBox" unique_id=1248834510]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Restore drifting storm relays to reconstruct the final transmission of the pirate dreadnought Night Saint.
+
+Trace the signal through hostile space, survive the storm, and recover the black box before the trail goes dark."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PromptLabel" type="Label" parent="Root/Panel/VBox" unique_id=1061263875]
+layout_mode = 2
+text = "Use keyboard or gamepad to navigate"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Root/Panel/VBox" unique_id=2033704907]
+layout_mode = 2
+theme_override_constants/margin_left = 128
+theme_override_constants/margin_right = 128
+
+[node name="Buttons" type="VBoxContainer" parent="Root/Panel/VBox/MarginContainer" unique_id=1625858977]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StartButton" type="Button" parent="Root/Panel/VBox/MarginContainer/Buttons" unique_id=17262344]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Start"
+
+[node name="QuitButton" type="Button" parent="Root/Panel/VBox/MarginContainer/Buttons" unique_id=1512985303]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Quit"

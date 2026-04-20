@@ -484,6 +484,7 @@ $RECYCLE.BIN/
 # Godot 4+ specific ignores
 .godot/
 /android/
+/export/
 
 # OpenCode config (contains machine-specific absolute paths)
 opencode.json

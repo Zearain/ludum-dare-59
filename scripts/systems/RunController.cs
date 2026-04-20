@@ -109,6 +109,15 @@ public partial class RunController : Node
         _playerShip.Died += OnPlayerDied;
         _playerShip.ScannerComponent.ScanTriggered += OnScanTriggered;
         _isInitialized = true;
+    }
+
+    public void StartNewRun()
+    {
+        if (!_isInitialized)
+        {
+            return;
+        }
+
         StartRun();
     }
 

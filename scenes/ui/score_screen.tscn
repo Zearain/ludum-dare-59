@@ -1,12 +1,13 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://b8u3h6o5cifk8"]
 
-[ext_resource type="Script" path="res://scripts/ui/ScoreScreenController.cs" id="1_score"]
+[ext_resource type="Script" uid="uid://ck27ihim6o367" path="res://scripts/ui/ScoreScreenController.cs" id="1_score"]
 
-[node name="ScoreScreen" type="CanvasLayer"]
+[node name="ScoreScreen" type="CanvasLayer" unique_id=844031494]
+process_mode = 2
 visible = false
 script = ExtResource("1_score")
 
-[node name="Root" type="Control" parent="."]
+[node name="Root" type="Control" parent="." unique_id=1945054348]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,7 +15,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Shade" type="ColorRect" parent="Root"]
+[node name="Shade" type="ColorRect" parent="Root" unique_id=1945085203]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,43 +24,79 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.72)
 
-[node name="Panel" type="PanelContainer" parent="Root"]
+[node name="Panel" type="PanelContainer" parent="Root" unique_id=1842845822]
 layout_mode = 1
-offset_left = 300.0
-offset_top = 120.0
-offset_right = 980.0
-offset_bottom = 600.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -340.0
+offset_top = -300.0
+offset_right = 340.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Root/Panel"]
+[node name="VBox" type="VBoxContainer" parent="Root/Panel" unique_id=2012185711]
 layout_mode = 2
+size_flags_vertical = 4
 theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="TitleLabel" type="Label" parent="Root/Panel/VBox" unique_id=1093243746]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Run Result"
+horizontal_alignment = 1
 
-[node name="TimeLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="TimeLabel" type="Label" parent="Root/Panel/VBox" unique_id=73690027]
 layout_mode = 2
 text = "Time: 00:00"
+horizontal_alignment = 1
 
-[node name="DamageLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="DamageLabel" type="Label" parent="Root/Panel/VBox" unique_id=1350847240]
 layout_mode = 2
 text = "Damage Taken: 0"
+horizontal_alignment = 1
 
-[node name="HullLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="HullLabel" type="Label" parent="Root/Panel/VBox" unique_id=1012789835]
 layout_mode = 2
 text = "Hull Remaining: 0"
+horizontal_alignment = 1
 
-[node name="SectorsLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="SectorsLabel" type="Label" parent="Root/Panel/VBox" unique_id=1379467620]
 layout_mode = 2
 text = "Sectors Cleared: 0"
+horizontal_alignment = 1
 
-[node name="ScoreLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="ScoreLabel" type="Label" parent="Root/Panel/VBox" unique_id=1763523553]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Score: 0"
+horizontal_alignment = 1
 
-[node name="PromptLabel" type="Label" parent="Root/Panel/VBox"]
+[node name="PromptLabel" type="Label" parent="Root/Panel/VBox" unique_id=1027008640]
 layout_mode = 2
-text = "Press R to restart"
+text = "Choose an option"
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Root/Panel/VBox" unique_id=1080915245]
+layout_mode = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_right = 64
+
+[node name="Buttons" type="VBoxContainer" parent="Root/Panel/VBox/MarginContainer" unique_id=1615449876]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="RestartButton" type="Button" parent="Root/Panel/VBox/MarginContainer/Buttons" unique_id=1859079336]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "Restart"
+
+[node name="QuitButton" type="Button" parent="Root/Panel/VBox/MarginContainer/Buttons" unique_id=998293149]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+text = "Quit"

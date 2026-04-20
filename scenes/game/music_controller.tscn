@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/systems/MusicController.cs" id="1_script"]
 
 [node name="MusicController" type="Node"]
+process_mode = 3
 script = ExtResource("1_script")
 
 [node name="PlayerA" type="AudioStreamPlayer" parent="."]

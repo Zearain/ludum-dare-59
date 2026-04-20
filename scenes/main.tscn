@@ -1,26 +1,27 @@
 [gd_scene format=3 uid="uid://cqkqh836dlm5t"]
 
 [ext_resource type="PackedScene" path="res://scenes/game/game_manager.tscn" id="1_gm"]
-[ext_resource type="PackedScene" path="res://scenes/game/run_controller.tscn" id="2_rc"]
 [ext_resource type="PackedScene" path="res://scenes/game/music_controller.tscn" id="2_mc"]
+[ext_resource type="PackedScene" path="res://scenes/game/run_controller.tscn" id="2_rc"]
 [ext_resource type="PackedScene" path="res://scenes/game/sector_root.tscn" id="3_sr"]
 [ext_resource type="PackedScene" uid="uid://ctcdrid00ndaj" path="res://scenes/player/player_ship.tscn" id="4_ps"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="5_hud"]
 [ext_resource type="Script" uid="uid://u8wv5fry3pvm" path="res://scripts/Main.cs" id="6_main"]
 [ext_resource type="PackedScene" path="res://scenes/ui/score_screen.tscn" id="7_score"]
-[ext_resource type="PackedScene" path="res://scenes/ui/crt_overlay.tscn" id="8_crt"]
-[ext_resource type="PackedScene" path="res://scenes/ui/deep_space_background.tscn" id="9_bg"]
+[ext_resource type="PackedScene" uid="uid://pxswbl81qxeo" path="res://scenes/ui/crt_overlay.tscn" id="8_crt"]
+[ext_resource type="PackedScene" uid="uid://ddg8h44pvxcwe" path="res://scenes/ui/deep_space_background.tscn" id="9_bg"]
+[ext_resource type="PackedScene" path="res://scenes/ui/main_menu.tscn" id="10_menu"]
 
 [node name="Main" type="Node" unique_id=128156468]
 script = ExtResource("6_main")
 
-[node name="DeepSpaceBackground" parent="." instance=ExtResource("9_bg")]
+[node name="DeepSpaceBackground" parent="." unique_id=464412042 instance=ExtResource("9_bg")]
 
 [node name="GameManager" parent="." unique_id=960754168 instance=ExtResource("1_gm")]
 
 [node name="RunController" parent="." unique_id=684415671 instance=ExtResource("2_rc")]
 
-[node name="MusicController" parent="." instance=ExtResource("2_mc")]
+[node name="MusicController" parent="." unique_id=667588120 instance=ExtResource("2_mc")]
 
 [node name="SectorRoot" parent="." unique_id=343812084 instance=ExtResource("3_sr")]
 
@@ -29,9 +30,10 @@ script = ExtResource("6_main")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1533745774]
 
 [node name="HUD" parent="." unique_id=1907033624 instance=ExtResource("5_hud")]
-layer = 1
 
-[node name="CRTOverlay" parent="." instance=ExtResource("8_crt")]
+[node name="CRTOverlay" parent="." unique_id=136827693 instance=ExtResource("8_crt")]
 
 [node name="ScoreScreen" parent="." unique_id=1782823723 instance=ExtResource("7_score")]
 layer = 3
+
+[node name="MainMenu" parent="." instance=ExtResource("10_menu")]

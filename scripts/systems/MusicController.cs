@@ -13,6 +13,7 @@ public partial class MusicController : Node
     private const string MidLoopPath = "res://assets/music/Dani Stob - Beyond The Stars - Loop.wav";
     private const string FinalLoopPath = "res://assets/music/Dani Stob - Unstoppable - Loop.wav";
     private const string VictoryPath = "res://assets/music/Dani Stob - Victory Fanfare.wav";
+    private const string MainMenuLoopPath = "res://assets/music/Dani Stob - Main Menu Theme - Loop.wav";
 
     private AudioStreamPlayer _playerA = null!;
     private AudioStreamPlayer _playerB = null!;
@@ -23,6 +24,7 @@ public partial class MusicController : Node
     private AudioStream _midLoop = null!;
     private AudioStream _finalLoop = null!;
     private AudioStream _victory = null!;
+    private AudioStream _mainMenuLoop = null!;
 
     private Tween? _transitionTween;
     private MusicCue _currentCue = MusicCue.None;
@@ -41,6 +43,7 @@ public partial class MusicController : Node
         _midLoop = LoadTrack(MidLoopPath);
         _finalLoop = LoadTrack(FinalLoopPath);
         _victory = LoadTrack(VictoryPath);
+        _mainMenuLoop = LoadTrack(MainMenuLoopPath);
 
         _playerA.VolumeDb = SilentVolumeDb;
         _playerB.VolumeDb = SilentVolumeDb;
@@ -62,9 +65,15 @@ public partial class MusicController : Node
     public void OnSectorLoaded(int sectorIndex)
     {
         MusicCue nextCue = GetSectorCue(sectorIndex);
-        bool shouldCrossfade = (_currentCue, nextCue) is (MusicCue.StageOneTwo, MusicCue.StageThreeFive)
+        bool shouldCrossfade = (_currentCue, nextCue) is (MusicCue.MainMenu, MusicCue.StageOneTwo)
+            or (MusicCue.StageOneTwo, MusicCue.StageThreeFive)
             or (MusicCue.StageThreeFive, MusicCue.Final);
         PlayCue(nextCue, shouldCrossfade);
+    }
+
+    public void PlayMainMenu()
+    {
+        PlayCue(MusicCue.MainMenu, shouldCrossfade: _activePlayer.Playing);
     }
 
     public void OnRunFinished(bool completed)
@@ -182,6 +191,7 @@ public partial class MusicController : Node
             MusicCue.StageThreeFive => _midLoop,
             MusicCue.Final => _finalLoop,
             MusicCue.Victory => _victory,
+            MusicCue.MainMenu => _mainMenuLoop,
             _ => _introLoop,
         };
     }
@@ -215,7 +225,7 @@ public partial class MusicController : Node
             return;
         }
 
-        if (_currentCue is MusicCue.StageOneTwo or MusicCue.StageThreeFive or MusicCue.Final)
+        if (_currentCue is MusicCue.StageOneTwo or MusicCue.StageThreeFive or MusicCue.Final or MusicCue.MainMenu)
         {
             _activePlayer.Play();
         }
@@ -228,5 +238,6 @@ public partial class MusicController : Node
         StageThreeFive,
         Final,
         Victory,
+        MainMenu,
     }
 }
